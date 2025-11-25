@@ -469,16 +469,11 @@ exports.approveHatchery = async (req, res) => {
       });
     }
 
-    // Check if all 4 images are approved
-    const approvedImages = hatchery.images.filter(
-      img => img.status === 'approved' || img.adminFeedback?.action === 'approve'
-    );
-
-    if (hatchery.images.length !== 4 || approvedImages.length !== 4) {
+    // Check if all 4 images are uploaded (no individual approval needed)
+    if (hatchery.images.length !== 4) {
       return res.status(400).json({
         success: false,
-        message: 'All 4 images must be approved before approving the hatchery',
-        approvedCount: approvedImages.length,
+        message: 'All 4 images must be uploaded before approving the hatchery',
         totalImages: hatchery.images.length,
       });
     }
