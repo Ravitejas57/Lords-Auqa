@@ -1,0 +1,413 @@
+.feedback-message {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+
+.feedback-message.success {
+  background-color: #C6F6D5;
+  color: #22543D;
+}
+
+.feedback-message.error {
+  background-color: #FED7D7;
+  color: #822727;
+}
+
+.action-btn.approve {
+  background-color: #C6F6D5;
+  color: #22543D;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.action-btn.approve:hover {
+  background-color: #9AE6B4;
+}
+
+.action-btn.reject {
+  background-color: #FED7D7;
+  color: #822727;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.action-btn.reject:hover {
+  background-color: #FC8181;
+}
+
+.status-badge.pending {
+  background-color: #FEFCBF;
+  color: #744210;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Rejection Reason Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.reject-modal {
+  background: white;
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-icon {
+  color: #dc2626;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: #6b7280;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #374151;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.reject-warning {
+  margin: 0 0 1.25rem 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.reject-warning strong {
+  color: #111827;
+}
+
+.reason-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reason-input-group label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.9375rem;
+}
+
+.required {
+  color: #dc2626;
+}
+
+.reason-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.reason-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.reason-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  border-radius: 0 0 0.75rem 0.75rem;
+}
+
+.btn-cancel {
+  padding: 0.625rem 1.25rem;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #374151;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-reject {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  background: #dc2626;
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-reject:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.btn-reject:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Rejection Warning Badge */
+.rejection-warning-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: all 0.2s;
+}
+
+.rejection-warning-badge:hover {
+  background-color: #fde68a;
+  border-color: #d97706;
+  transform: translateY(-1px);
+}
+
+.rejection-warning-badge svg {
+  font-size: 0.75rem;
+}
+
+.member-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* History Modal */
+.history-modal {
+  background: white;
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+.history-header h3 {
+  color: #1e40af !important;
+}
+
+.info-icon {
+  color: #1e40af !important;
+}
+
+.history-user-info {
+  background-color: #f3f4f6;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-user-info strong {
+  font-size: 1rem;
+  color: #111827;
+}
+
+.history-phone {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.history-details {
+  margin-bottom: 1rem;
+}
+
+.history-item {
+  margin-bottom: 0.75rem;
+}
+
+.history-item label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.history-item span {
+  color: #111827;
+  font-size: 0.9375rem;
+}
+
+.rejection-reason-text {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  color: #991b1b;
+  font-size: 0.9375rem;
+  margin: 0.25rem 0 0 0;
+  line-height: 1.5;
+}
+
+.history-warning {
+  display: flex;
+  gap: 0.75rem;
+  background-color: #fffbeb;
+  border: 1px solid #fbbf24;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  align-items: flex-start;
+}
+
+.history-warning .warning-icon {
+  color: #d97706;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.history-warning p {
+  margin: 0;
+  color: #92400e;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.btn-close-history {
+  padding: 0.625rem 1.5rem;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-close-history:hover {
+  background-color: #2563eb;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .actions-cell {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .action-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .reject-modal,
+  .history-modal {
+    max-width: 100%;
+    margin: 0.5rem;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .btn-cancel,
+  .btn-reject,
+  .btn-close-history {
+    width: 100%;
+  }
+
+  .rejection-warning-badge {
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+}

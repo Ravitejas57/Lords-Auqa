@@ -1,0 +1,48 @@
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.email-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.date-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+}
+
+.rejection-reason {
+  max-width: 300px;
+  color: #E53E3E;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.member-id {
+  font-size: 0.75rem;
+  color: #718096;
+  margin-top: 0.25rem;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .rejection-reason {
+    max-width: 200px;
+  }
+  
+  .contact-info {
+    font-size: 0.875rem;
+  }
+  
+  .email-cell {
+    font-size: 0.8125rem;
+  }
+}

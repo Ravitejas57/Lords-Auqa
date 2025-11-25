@@ -1,0 +1,87 @@
+{
+  "expo": {
+    "name": "Lords Aqua Hatcheries",
+    "slug": "lords-aqua-hatcheries",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "mobileapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to take photos and record videos for notifications.",
+        "NSMicrophoneUsageDescription": "This app uses the microphone to record audio with videos for notifications.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select images and videos for notifications.",
+        "NSPhotoLibraryAddUsageDescription": "This app needs permission to save images and videos to your photo library.",
+        "PHPhotoLibraryPreventAutomaticLimitedAccessAlert": true
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow HatchTrack to access your camera to capture hatchery progress images."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow HatchTrack to access your photos and videos to select media for notifications.",
+          "cameraPermission": "Allow HatchTrack to access your camera to capture photos and videos for notifications."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow HatchTrack to access your location to tag images with geographic data."
+        }
+      ],
+      [
+        "react-native-maps",
+        {
+          "googleMapsApiKey": ""
+        }
+      ],
+      "expo-maps"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

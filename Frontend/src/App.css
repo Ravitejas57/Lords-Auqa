@@ -1,0 +1,73 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f7f8;
+  color: #222;
+  overflow-x: hidden;
+}
+
+/* App container */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Default button styling */
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  outline: none;
+}
+
+/* Scrollbar customization (for webkit browsers like Chrome, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #83c5be;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #006d77;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f4f7f8;
+}
+
+/* Utility classes */
+.container {
+  width: 100%;
+  padding: 0 1rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+/* Responsiveness tweaks */
+@media (max-width: 768px) {
+  body {
+    font-size: 0.95rem;
+  }
+
+  .container {
+    padding: 0 0.8rem;
+  }
+}
+
+

@@ -1,0 +1,251 @@
+/* Pending Approval Page Styles */
+
+.pending-approval-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.pending-approval-card {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem 2.5rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.pending-icon-wrapper {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.pending-icon {
+  font-size: 3rem;
+  color: white;
+}
+
+.pending-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 1rem;
+}
+
+.pending-message {
+  margin-bottom: 2rem;
+}
+
+.pending-main-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.pending-sub-text {
+  font-size: 1rem;
+  color: #718096;
+  line-height: 1.6;
+}
+
+.pending-status-box {
+  background: #f7fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+}
+
+.status-item:first-child {
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 0.75rem;
+  padding-bottom: 1rem;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+}
+
+.status-icon.success {
+  color: #48bb78;
+}
+
+.status-icon.pending {
+  color: #ed8936;
+}
+
+.status-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.pending-info-box {
+  background: #edf2f7;
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.info-text {
+  font-size: 0.9375rem;
+  color: #4a5568;
+  line-height: 1.7;
+  margin-bottom: 0.5rem;
+}
+
+.info-text:last-child {
+  margin-bottom: 0;
+}
+
+.back-to-home-btn {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.back-to-home-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.back-to-home-btn:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Dark Mode Support */
+.auth-dark .pending-approval-card {
+  background: #2d3748;
+}
+
+.auth-dark .pending-title {
+  color: #f7fafc;
+}
+
+.auth-dark .pending-main-text {
+  color: #e2e8f0;
+}
+
+.auth-dark .pending-sub-text {
+  color: #a0aec0;
+}
+
+.auth-dark .pending-status-box {
+  background: #1a202c;
+}
+
+.auth-dark .status-text {
+  color: #e2e8f0;
+}
+
+.auth-dark .pending-info-box {
+  background: #1a202c;
+  border-left-color: #9f7aea;
+}
+
+.auth-dark .info-text {
+  color: #cbd5e0;
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+  .pending-approval-container {
+    padding: 1rem;
+  }
+
+  .pending-approval-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .pending-icon-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+
+  .pending-icon {
+    font-size: 2.5rem;
+  }
+
+  .pending-title {
+    font-size: 1.5rem;
+  }
+
+  .pending-main-text {
+    font-size: 1rem;
+  }
+
+  .pending-sub-text {
+    font-size: 0.9375rem;
+  }
+
+  .status-icon {
+    font-size: 1.25rem;
+  }
+
+  .status-text {
+    font-size: 0.9375rem;
+  }
+
+  .info-text {
+    font-size: 0.875rem;
+  }
+
+  .back-to-home-btn {
+    font-size: 0.9375rem;
+    padding: 0.75rem 1.25rem;
+  }
+}
