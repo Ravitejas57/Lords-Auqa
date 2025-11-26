@@ -138,10 +138,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.text,
     marginBottom: 4,
+    fontFamily: 'Nunito_400Regular',
   },
   subtitle: {
     fontSize: 14,
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   userCard: {
     flexDirection: 'row',
@@ -166,6 +168,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     color: Colors.white,
+    fontFamily: 'Nunito_400Regular',
   },
   userInfo: {
     flex: 1,
@@ -175,10 +178,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.text,
     marginBottom: 4,
+    fontFamily: 'Nunito_400Regular',
   },
   userPhone: {
     fontSize: 14,
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   section: {
     marginBottom: 24,
@@ -190,6 +195,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+    fontFamily: 'Nunito_400Regular',
   },
   settingItem: {
     flexDirection: 'row',
@@ -220,6 +226,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: Colors.text,
+    fontFamily: 'Nunito_400Regular',
   },
   settingRight: {
     flexDirection: 'row',
@@ -229,6 +236,7 @@ const styles = StyleSheet.create({
   settingValue: {
     fontSize: 14,
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   logoutButton: {
     flexDirection: 'row',
@@ -244,11 +252,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: Colors.white,
+    fontFamily: 'Nunito_400Regular',
   },
   versionText: {
     textAlign: 'center',
     fontSize: 12,
     color: Colors.textLight,
     marginTop: 24,
+    fontFamily: 'Nunito_400Regular',
   },
 });

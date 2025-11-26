@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Outlet, NavLink } from 'react-router-dom';
 import {
   FiHome, FiUsers, FiClock, FiXCircle, FiMessageSquare, FiUserPlus,
@@ -20,6 +20,7 @@ const AdminLayout = () => {
   const [adminData, setAdminData] = useState(null);
   const [adminProfile, setAdminProfile] = useState(null);
   const [unreadHelpCount, setUnreadHelpCount] = useState(0);
+  const isMountedRef = useRef(true);
 
   // No need for manual active section tracking - NavLink handles this
 
@@ -31,35 +32,47 @@ const AdminLayout = () => {
       const response = await fetch(`http://localhost:3000/api/adminActions/getAdmin/${adminId}`);
       const data = await response.json();
 
-      if (data.success && data.admin) {
+      if (isMountedRef.current && data.success && data.admin) {
         setAdminProfile(data.admin);
       }
     } catch (err) {
-      console.error('Error fetching admin profile:', err);
+      if (isMountedRef.current) {
+        console.error('Error fetching admin profile:', err);
+      }
     }
   };
 
   useEffect(() => {
+    isMountedRef.current = true;
+    
     // Get admin data from localStorage
     const storedAdminData = localStorage.getItem('adminData');
     if (!storedAdminData) {
-      navigate('/admin-login');
-      return;
+      if (isMountedRef.current) {
+        navigate('/admin-login');
+      }
+      return () => { isMountedRef.current = false; };
     }
     const parsedData = JSON.parse(storedAdminData);
-    setAdminData(parsedData);
+    if (isMountedRef.current) {
+      setAdminData(parsedData);
+    }
 
     // Fetch full profile data including profile image
     const adminId = parsedData.profile?.adminId || parsedData.adminId;
-    if (adminId) {
+    if (adminId && isMountedRef.current) {
       fetchAdminProfile(adminId);
     }
+    
+    return () => { isMountedRef.current = false; };
   }, [navigate]);
 
   // Fetch unread help message count for admin
   useEffect(() => {
+    isMountedRef.current = true;
+    
     const fetchHelpUnreadCount = async () => {
-      if (!adminData) return;
+      if (!adminData || !isMountedRef.current) return;
 
       const adminId = adminData.profile?.adminId || adminData.adminId || adminData._id;
       if (!adminId) return;
@@ -68,53 +81,73 @@ const AdminLayout = () => {
         // The endpoint expects the admin's string adminId (e.g., "ADM1761907518119")
         const response = await fetch(`http://localhost:3000/api/user-help/admin/unread-count/${adminId}`);
         const data = await response.json();
-        if (data.success) {
+        if (isMountedRef.current && data.success) {
           setUnreadHelpCount(data.unreadCount);
           console.log('Admin help unread count:', data.unreadCount);
         }
       } catch (error) {
-        console.error("Error fetching admin help unread count:", error);
+        if (isMountedRef.current) {
+          console.error("Error fetching admin help unread count:", error);
+        }
       }
     };
 
     fetchHelpUnreadCount();
 
     // Refresh count every 30 seconds
-    const interval = setInterval(fetchHelpUnreadCount, 30000);
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      if (isMountedRef.current) {
+        fetchHelpUnreadCount();
+      }
+    }, 30000);
+    
+    return () => {
+      isMountedRef.current = false;
+      clearInterval(interval);
+    };
   }, [adminData]);
 
   // Mark help messages as read when navigating to help page
   useEffect(() => {
+    isMountedRef.current = true;
+    
     const markHelpAsRead = async () => {
-      if (location.pathname === '/admin/help' && adminData && unreadHelpCount > 0) {
-        const adminId = adminData.profile?.adminId || adminData.adminId || adminData._id;
-        if (!adminId) return;
+      if (!isMountedRef.current || location.pathname !== '/admin/help' || !adminData || unreadHelpCount <= 0) {
+        return;
+      }
 
-        try {
-          // Get admin's MongoDB _id if we only have adminId string
-          let adminMongoId = adminId;
+      const adminId = adminData.profile?.adminId || adminData.adminId || adminData._id;
+      if (!adminId) return;
 
-          if (typeof adminId === 'string' && adminId.startsWith('ADM')) {
-            const adminResponse = await fetch(`http://localhost:3000/api/adminActions/getAdmin/${adminId}`);
-            const data = await adminResponse.json();
-            if (data.success && data.admin) {
-              adminMongoId = data.admin._id;
-            }
+      try {
+        // Get admin's MongoDB _id if we only have adminId string
+        let adminMongoId = adminId;
+
+        if (typeof adminId === 'string' && adminId.startsWith('ADM')) {
+          const adminResponse = await fetch(`http://localhost:3000/api/adminActions/getAdmin/${adminId}`);
+          const data = await adminResponse.json();
+          if (isMountedRef.current && data.success && data.admin) {
+            adminMongoId = data.admin._id;
           }
+        }
 
+        if (isMountedRef.current) {
           await fetch(`http://localhost:3000/api/user-help/admin/mark-all-read/${adminMongoId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
           });
           setUnreadHelpCount(0);
-        } catch (error) {
+        }
+      } catch (error) {
+        if (isMountedRef.current) {
           console.error("Error marking admin help messages as read:", error);
         }
       }
     };
 
     markHelpAsRead();
+    
+    return () => { isMountedRef.current = false; };
   }, [location.pathname, adminData, unreadHelpCount]);
 
   // Navigation is now handled by NavLink components
@@ -123,6 +156,13 @@ const AdminLayout = () => {
   useEffect(() => {
     document.documentElement.setAttribute("data-admin-theme", "light");
     document.documentElement.classList.remove("dark");
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   // Logout handler

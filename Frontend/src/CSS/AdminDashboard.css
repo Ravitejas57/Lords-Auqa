@@ -78,7 +78,7 @@
 .admin-dashboard {
   min-height: 100vh;
   background: var(--admin-bg);
-  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Nunito', sans-serif;
   color: var(--admin-text-primary);
   display: grid;
   grid-template-areas:
@@ -192,7 +192,7 @@
   color: var(--admin-text-primary);
   font-size: 0.9375rem;
   transition: all 0.2s ease;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
 }
 
 .admin-search input:focus {
@@ -759,7 +759,7 @@
   font-weight: 500;
   cursor: pointer;
   outline: none;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
 }
 
 .filter-group.search-filter {
@@ -774,7 +774,7 @@
   font-size: 0.9375rem;
   font-weight: 500;
   outline: none;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   width: 100%;
   min-width: 200px;
 }
@@ -1458,7 +1458,7 @@
   color: var(--admin-text-primary);
   background: var(--admin-card-bg);
   resize: vertical;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   margin-bottom: var(--admin-spacing-lg);
 }
 

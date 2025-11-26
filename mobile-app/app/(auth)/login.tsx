@@ -670,10 +670,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.text,
     marginBottom: 8,
+    fontFamily: 'Nunito_400Regular',
   },
   subtitle: {
     fontSize: 16,
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   formContainer: {
     width: '100%',
@@ -697,11 +699,13 @@ const styles = StyleSheet.create({
     color: Colors.text,
     fontWeight: '600',
     marginRight: 8,
+    fontFamily: 'Nunito_400Regular',
   },
   input: {
     flex: 1,
     fontSize: 16,
     color: Colors.text,
+    fontFamily: 'Nunito_400Regular',
   },
   phoneInput: {
     paddingLeft: 0,
@@ -721,9 +725,11 @@ const styles = StyleSheet.create({
   pickerText: {
     fontSize: 16,
     color: Colors.text,
+    fontFamily: 'Nunito_400Regular',
   },
   pickerPlaceholder: {
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   dropdownButton: {
     flex: 1,
@@ -735,9 +741,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.text,
     flex: 1,
+    fontFamily: 'Nunito_400Regular',
   },
   dropdownPlaceholder: {
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   button: {
     backgroundColor: Colors.primary,
@@ -759,6 +767,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'Nunito_400Regular',
   },
   toggleContainer: {
     flexDirection: 'row',
@@ -769,11 +778,13 @@ const styles = StyleSheet.create({
   toggleText: {
     fontSize: 14,
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   toggleLink: {
     fontSize: 14,
     color: Colors.primary,
     fontWeight: '600',
+    fontFamily: 'Nunito_400Regular',
   },
   adminToggleContainer: {
     flexDirection: 'row',
@@ -788,17 +799,20 @@ const styles = StyleSheet.create({
   adminToggleText: {
     fontSize: 12,
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   adminToggleLink: {
     fontSize: 12,
     color: Colors.textLight,
     fontWeight: '600',
     textDecorationLine: 'underline',
+    fontFamily: 'Nunito_400Regular',
   },
   adminToggleSeparator: {
     fontSize: 12,
     color: Colors.textLight,
     marginHorizontal: 4,
+    fontFamily: 'Nunito_400Regular',
   },
   modalOverlay: {
     flex: 1,
@@ -824,6 +838,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: Colors.text,
+    fontFamily: 'Nunito_400Regular',
   },
   adminItem: {
     flexDirection: 'row',
@@ -853,11 +868,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: Colors.white,
+    fontFamily: 'Nunito_400Regular',
   },
   adminName: {
     fontSize: 16,
     fontWeight: '600',
     color: Colors.text,
+    fontFamily: 'Nunito_400Regular',
   },
   emptyList: {
     padding: 40,
@@ -866,5 +883,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
 });
