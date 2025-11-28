@@ -61,9 +61,10 @@ const UserSettings = ({ onProfileUpdate }) => {
           district: data.user.district || "",
           pincode: data.user.pincode || "",
           address: data.user.address || "",
-          seedsAvailable: data.user.seedsAvailable || 0,
-          seedsSold: data.user.seedsSold || 0,
-          activeBatches: data.user.activeBatches || 0,
+          seedsCount: data.user.seedsCount || 0,
+          bonus: data.user.bonus || 0,
+          price: data.user.price || 0,
+          seedType: data.user.seedType || 'N/A',
         });
       } else {
         setError("Failed to fetch user data");
@@ -345,7 +346,7 @@ const UserSettings = ({ onProfileUpdate }) => {
                 }}>
                   <FiPackage /> Seeds Information
                 </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                   <div style={{
                     padding: '1rem',
                     backgroundColor: '#f0fdf4',
@@ -353,10 +354,10 @@ const UserSettings = ({ onProfileUpdate }) => {
                     border: '1px solid #bbf7d0'
                   }}>
                     <div style={{ fontSize: '0.75rem', color: '#166534', marginBottom: '0.25rem' }}>
-                      Seeds Available
+                      Seeds Count
                     </div>
                     <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#15803d' }}>
-                      {userData?.seedsAvailable || 0}
+                      {userData?.seedsCount || 0}
                     </div>
                   </div>
                   <div style={{
@@ -366,10 +367,10 @@ const UserSettings = ({ onProfileUpdate }) => {
                     border: '1px solid #fecaca'
                   }}>
                     <div style={{ fontSize: '0.75rem', color: '#991b1b', marginBottom: '0.25rem' }}>
-                      Seeds Sold
+                      Bonus
                     </div>
                     <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#dc2626' }}>
-                      {userData?.seedsSold || 0}
+                      {userData?.bonus || 0}
                     </div>
                   </div>
                   <div style={{
@@ -379,10 +380,23 @@ const UserSettings = ({ onProfileUpdate }) => {
                     border: '1px solid #bfdbfe'
                   }}>
                     <div style={{ fontSize: '0.75rem', color: '#1e40af', marginBottom: '0.25rem' }}>
-                      Active Batches
+                      Price
                     </div>
                     <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#2563eb' }}>
-                      {userData?.activeBatches || 0}
+                      ₹{userData?.price || 0}
+                    </div>
+                  </div>
+                  <div style={{
+                    padding: '1rem',
+                    backgroundColor: '#fef3c7',
+                    borderRadius: '0.5rem',
+                    border: '1px solid #fde047'
+                  }}>
+                    <div style={{ fontSize: '0.75rem', color: '#92400e', marginBottom: '0.25rem' }}>
+                      Seed Type
+                    </div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#a16207' }}>
+                      {userData?.seedType || 'N/A'}
                     </div>
                   </div>
                 </div>

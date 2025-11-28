@@ -349,9 +349,10 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
   });
   const [isResetting, setIsResetting] = useState(false);
   const [seedsData, setSeedsData] = useState({
-    seedsAvailable: user.seedsAvailable || 0,
-    seedsSold: user.seedsSold || 0,
-    activeBatches: user.activeBatches || 0
+    seedsCount: user.seedsCount || 0,
+    bonus: user.bonus || 0,
+    price: user.price || 0,
+    seedType: user.seedType || 'Hardyline'
   });
   const [isSavingSeeds, setIsSavingSeeds] = useState(false);
 
@@ -759,7 +760,7 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               className="seeds-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr',
+                gridTemplateColumns: '1fr 1fr',
                 gap: '1rem',
                 marginBottom: '1.25rem'
               }}
@@ -775,8 +776,8 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               >
                 <input
                   type="number"
-                  value={seedsData.seedsAvailable}
-                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedsAvailable: parseInt(e.target.value) || 0 }))}
+                  value={seedsData.seedsCount}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedsCount: parseInt(e.target.value) || 0 }))}
                   style={{
                     width: '100%',
                     fontSize: '1.25rem',
@@ -789,7 +790,7 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
                     backgroundColor: 'white'
                   }}
                 />
-                <div style={{ fontSize: '0.75rem', color: '#0c4a6e', fontWeight: '500', marginTop: '0.25rem' }}>Seeds Available</div>
+                <div style={{ fontSize: '0.75rem', color: '#0c4a6e', fontWeight: '500', marginTop: '0.25rem' }}>Seeds Count</div>
               </div>
 
               <div
@@ -803,8 +804,8 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               >
                 <input
                   type="number"
-                  value={seedsData.seedsSold}
-                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedsSold: parseInt(e.target.value) || 0 }))}
+                  value={seedsData.bonus}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, bonus: parseInt(e.target.value) || 0 }))}
                   style={{
                     width: '100%',
                     fontSize: '1.25rem',
@@ -817,7 +818,7 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
                     backgroundColor: 'white'
                   }}
                 />
-                <div style={{ fontSize: '0.75rem', color: '#14532d', fontWeight: '500', marginTop: '0.25rem' }}>Seeds Sold</div>
+                <div style={{ fontSize: '0.75rem', color: '#14532d', fontWeight: '500', marginTop: '0.25rem' }}>Bonus</div>
               </div>
 
               <div
@@ -831,8 +832,9 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               >
                 <input
                   type="number"
-                  value={seedsData.activeBatches}
-                  onChange={(e) => setSeedsData(prev => ({ ...prev, activeBatches: parseInt(e.target.value) || 0 }))}
+                  step="0.01"
+                  value={seedsData.price}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
                   style={{
                     width: '100%',
                     fontSize: '1.25rem',
@@ -845,7 +847,36 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
                     backgroundColor: 'white'
                   }}
                 />
-                <div style={{ fontSize: '0.75rem', color: '#713f12', fontWeight: '500', marginTop: '0.25rem' }}>Active Batches</div>
+                <div style={{ fontSize: '0.75rem', color: '#713f12', fontWeight: '500', marginTop: '0.25rem' }}>Price</div>
+              </div>
+
+              <div
+                style={{
+                  padding: '0.75rem',
+                  backgroundColor: '#fce7f3',
+                  border: '1px solid #fbcfe8',
+                  borderRadius: '0.5rem',
+                  textAlign: 'center'
+                }}
+              >
+                <input
+                  type="text"
+                  value={seedsData.seedType}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedType: e.target.value }))}
+                  placeholder="Enter seed type"
+                  style={{
+                    width: '100%',
+                    fontSize: '1.25rem',
+                    fontWeight: '700',
+                    color: '#9f1239',
+                    textAlign: 'center',
+                    border: '1px solid #fbcfe8',
+                    borderRadius: '0.375rem',
+                    padding: '0.25rem',
+                    backgroundColor: 'white'
+                  }}
+                />
+                <div style={{ fontSize: '0.75rem', color: '#881337', fontWeight: '500', marginTop: '0.25rem' }}>Seed Type</div>
               </div>
             </div>
 
@@ -1389,7 +1420,7 @@ const AdminSellers = () => {
                       : 'N/A'}
                   </td>
                   <td>
-                    <span className="seeds-badge">{user.seedsAvailable?.toLocaleString() || 0}</span>
+                    <span className="seeds-badge">{user.seedsCount?.toLocaleString() || 0}</span>
                   </td>
                   <td>
                     <div className="images-cell" style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>

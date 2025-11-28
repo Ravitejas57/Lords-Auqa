@@ -34,9 +34,10 @@ const AdminAddUser = () => {
     pincode: "",
 
     // Seeds Information
-    seedsAvailable: "",
-    seedsSold: "",
-    activeBatches: "",
+    seedsCount: "",
+    bonus: "",
+    price: "",
+    seedType: "",
 
     // Security
     password: "",
@@ -93,18 +94,24 @@ const AdminAddUser = () => {
     if (!formData.pincode.trim()) newErrors.pincode = "Pincode is required";
 
     // Seeds Information validations
-    if (!formData.seedsAvailable && formData.seedsAvailable !== 0) {
-      newErrors.seedsAvailable = "Seeds available is required";
-    } else if (isNaN(formData.seedsAvailable)) {
-      newErrors.seedsAvailable = "Seeds available must be a number";
+    if (!formData.seedsCount && formData.seedsCount !== "0") {
+      newErrors.seedsCount = "Seeds count is required";
+    } else if (isNaN(formData.seedsCount)) {
+      newErrors.seedsCount = "Seeds count must be a number";
     }
 
-    if (formData.seedsSold && isNaN(formData.seedsSold)) {
-      newErrors.seedsSold = "Seeds sold must be a number";
+    if (formData.bonus && isNaN(formData.bonus)) {
+      newErrors.bonus = "Bonus must be a number";
     }
 
-    if (formData.activeBatches && isNaN(formData.activeBatches)) {
-      newErrors.activeBatches = "Active batches must be a number";
+    if (!formData.price) {
+      newErrors.price = "Price is required";
+    } else if (isNaN(formData.price)) {
+      newErrors.price = "Price must be a number";
+    }
+
+    if (!formData.seedType.trim()) {
+      newErrors.seedType = "Seed type is required";
     }
 
     // Password validation
@@ -168,9 +175,10 @@ const AdminAddUser = () => {
         district: formData.district || "",
         fullAddress: formData.fullAddress || "",
         pincode: formData.pincode || "",
-        seedsAvailable: formData.seedsAvailable ? parseInt(formData.seedsAvailable) : 0,
-        seedsSold: formData.seedsSold ? parseInt(formData.seedsSold) : 0,
-        activeBatches: formData.activeBatches ? parseInt(formData.activeBatches) : 0,
+        seedsCount: formData.seedsCount ? parseInt(formData.seedsCount) : 0,
+        bonus: formData.bonus ? parseInt(formData.bonus) : 0,
+        price: formData.price ? parseFloat(formData.price) : 0,
+        seedType: formData.seedType || "Hardyline",
         assignedAdmin: adminId, // Use the retrieved admin ID
       };
 
@@ -390,52 +398,70 @@ const AdminAddUser = () => {
               <div className="form-grid">
                 <div className="form-field">
                   <label>
-                    <FiPackage /> Seeds Available *
+                    <FiPackage /> Seeds Count *
                   </label>
                   <input
-                    name="seedsAvailable"
+                    name="seedsCount"
                     type="number"
-                    value={formData.seedsAvailable}
+                    value={formData.seedsCount}
                     onChange={handleChange}
-                    placeholder="Enter seeds available"
-                    className={errors.seedsAvailable ? "error-input" : ""}
+                    placeholder="Enter seeds count"
+                    className={errors.seedsCount ? "error-input" : ""}
                   />
-                  {errors.seedsAvailable && (
-                    <small className="error">{errors.seedsAvailable}</small>
+                  {errors.seedsCount && (
+                    <small className="error">{errors.seedsCount}</small>
                   )}
                 </div>
 
                 <div className="form-field">
                   <label>
-                    <FiPackage /> Seeds Sold
+                    <FiPackage /> Bonus
                   </label>
                   <input
-                    name="seedsSold"
+                    name="bonus"
                     type="number"
-                    value={formData.seedsSold}
+                    value={formData.bonus}
                     onChange={handleChange}
-                    placeholder="Enter seeds sold"
-                    className={errors.seedsSold ? "error-input" : ""}
+                    placeholder="Enter bonus"
+                    className={errors.bonus ? "error-input" : ""}
                   />
-                  {errors.seedsSold && (
-                    <small className="error">{errors.seedsSold}</small>
+                  {errors.bonus && (
+                    <small className="error">{errors.bonus}</small>
                   )}
                 </div>
 
                 <div className="form-field">
                   <label>
-                    <FiPackage /> Active Batches
+                    <FiPackage /> Price *
                   </label>
                   <input
-                    name="activeBatches"
+                    name="price"
                     type="number"
-                    value={formData.activeBatches}
+                    step="0.01"
+                    value={formData.price}
                     onChange={handleChange}
-                    placeholder="Enter active batches"
-                    className={errors.activeBatches ? "error-input" : ""}
+                    placeholder="Enter price"
+                    className={errors.price ? "error-input" : ""}
                   />
-                  {errors.activeBatches && (
-                    <small className="error">{errors.activeBatches}</small>
+                  {errors.price && (
+                    <small className="error">{errors.price}</small>
+                  )}
+                </div>
+
+                <div className="form-field">
+                  <label>
+                    <FiPackage /> Seed Type *
+                  </label>
+                  <input
+                    type="text"
+                    name="seedType"
+                    value={formData.seedType}
+                    onChange={handleChange}
+                    placeholder="Enter seed type (e.g., Hardyline, Softline, Mixed)"
+                    className={errors.seedType ? "error-input" : ""}
+                  />
+                  {errors.seedType && (
+                    <small className="error">{errors.seedType}</small>
                   )}
                 </div>
               </div>

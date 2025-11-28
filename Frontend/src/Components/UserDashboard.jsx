@@ -22,7 +22,9 @@ import { Navigate } from 'react-router-dom';
 import UserNotifications from "./UserNotifications";
 import UserHelp from "./UserHelp";
 import UserSettings from "./UserSettings";
-import { getUserNotifications, markAllAsRead } from "../services/notificationService";
+import { getUserNotifications, markAllAsRead, getActiveStories, markAsRead } from "../services/notificationService";
+import Stories from './Stories';
+import StoryViewer from './StoryViewer';
 
 // ImageDetailsWithMap Component for User Dashboard
 const ImageDetailsWithMap = ({ selectedImageData }) => {
@@ -712,6 +714,11 @@ function UserDashboardInner() {
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [unreadHelpCount, setUnreadHelpCount] = useState(0);
 
+  // Stories state
+  const [stories, setStories] = useState([]);
+  const [showStoryViewer, setShowStoryViewer] = useState(false);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+
   // User profile state
   const [userProfile, setUserProfile] = useState({
     mongoId: localStorage.getItem("userMongoId") || "", // MongoDB _id for notifications
@@ -828,11 +835,10 @@ function UserDashboardInner() {
 
   // Overview stats - now derived from userProfile
   const stats = {
-    totalseeds: userProfile?.totalseeds || 0,
-    seedsUsed: userProfile?.seedsUsed || 0,
-    seedsAvailable: userProfile?.seedsAvailable || 0,
-    seedsSold: userProfile?.seedsSold || 0,
-    activeBatches: userProfile?.activeBatches || 0,
+    seedsCount: userProfile?.seedsCount || 0,
+    bonus: userProfile?.bonus || 0,
+    price: userProfile?.price || 0,
+    seedType: userProfile?.seedType || 'N/A',
   };
 
   const UPLOAD_UNLOCK_DELAY_MS = 5 * 60 * 1000; // 5 minutes per slot
@@ -951,8 +957,28 @@ function UserDashboardInner() {
 
     fetchNotificationCount();
 
+    // Also fetch stories
+    const fetchStories = async () => {
+      const mongoId = userProfile.mongoId || localStorage.getItem("userMongoId");
+      if (!mongoId) return;
+
+      try {
+        const response = await getActiveStories(mongoId);
+        if (response.success && response.stories) {
+          setStories(response.stories);
+        }
+      } catch (error) {
+        console.error("Error fetching stories:", error);
+      }
+    };
+
+    fetchStories();
+
     // Refresh count every 30 seconds
-    const interval = setInterval(fetchNotificationCount, 30000);
+    const interval = setInterval(() => {
+      fetchNotificationCount();
+      fetchStories();
+    }, 30000);
     return () => clearInterval(interval);
   }, [userProfile.mongoId]);
 
@@ -2073,6 +2099,26 @@ function UserDashboardInner() {
     // Scroll to account security section (optional)
   };
 
+  // Handle story press
+  const handleStoryPress = (index) => {
+    setSelectedStoryIndex(index);
+    setShowStoryViewer(true);
+  };
+
+  // Handle story viewed
+  const handleStoryViewed = async (storyId) => {
+    try {
+      await markAsRead(storyId);
+      // Update local state
+      setStories(prev => prev.map(story =>
+        story._id === storyId ? { ...story, read: true } : story
+      ));
+    } catch (error) {
+      // Silently fail, story will still be marked as read in UI
+      console.error('Error marking story as viewed:', error);
+    }
+  };
+
   const handleLogout = () => {
     console.log("Logging out...");
     // Clear all user data from localStorage
@@ -2158,8 +2204,8 @@ function UserDashboardInner() {
             <FiPackage />
           </div>
           <div className="stat-content">
-            <div className="stat-value">{stats.seedsAvailable.toLocaleString()}</div>
-            <div className="stat-label">Seeds Available</div>
+            <div className="stat-value">{stats.seedsCount.toLocaleString()}</div>
+            <div className="stat-label">Seeds Count</div>
           </div>
         </div>
 
@@ -2168,8 +2214,8 @@ function UserDashboardInner() {
             <FiTrendingUp />
           </div>
           <div className="stat-content">
-            <div className="stat-value">{stats.seedsSold.toLocaleString()}</div>
-            <div className="stat-label">Seeds Sold</div>
+            <div className="stat-value">{stats.bonus.toLocaleString()}</div>
+            <div className="stat-label">Bonus</div>
           </div>
         </div>
 
@@ -2178,11 +2224,46 @@ function UserDashboardInner() {
             <FiActivity />
           </div>
           <div className="stat-content">
-            <div className="stat-value">{stats.activeBatches}</div>
-            <div className="stat-label">Active Batches</div>
+            <div className="stat-value">₹{stats.price.toLocaleString()}</div>
+            <div className="stat-label">Price</div>
+          </div>
+        </div>
+
+        <div className="stat-card seed-type" style={{ gridColumn: 'span 3' }}>
+          <div className="stat-icon">
+            <FiPackage />
+          </div>
+          <div className="stat-content">
+            <div className="stat-value">{stats.seedType}</div>
+            <div className="stat-label">Seed Type</div>
           </div>
         </div>
       </div>
+
+      {/* Admin's Recent Updates - Stories Section */}
+      {stories.length > 0 && (
+        <div style={{
+          marginTop: '2rem',
+          padding: '1.5rem',
+          backgroundColor: '#ffffff',
+          borderRadius: '1rem',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+        }}>
+          <div style={{ marginBottom: '1rem' }}>
+            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700', color: '#111827' }}>
+              Admin's Recent Updates
+            </h3>
+            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: '#6b7280' }}>
+              View latest updates and announcements
+            </p>
+          </div>
+          <Stories
+            stories={stories}
+            onStoryPress={handleStoryPress}
+            showDelete={false}
+          />
+        </div>
+      )}
 
       {/* Image Upload Section - 4 Default Slots */}
       <div className="image-upload-section" style={{
@@ -3022,6 +3103,15 @@ function UserDashboardInner() {
           </div>
         </div>
       )}
+
+      {/* Story Viewer Modal */}
+      <StoryViewer
+        visible={showStoryViewer}
+        stories={stories}
+        initialIndex={selectedStoryIndex}
+        onClose={() => setShowStoryViewer(false)}
+        onStoryViewed={handleStoryViewed}
+      />
 
     </div>
   );

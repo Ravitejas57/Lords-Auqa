@@ -154,3 +154,57 @@ export const deleteAllNotifications = async (userId) => {
   });
   return handleResponse(response);
 };
+
+// ==================== STORY/STATUS APIs ====================
+
+/**
+ * Get active stories for a user
+ * @param {string} userId - User ID
+ */
+export const getActiveStories = async (userId) => {
+  const response = await fetch(`${API_BASE_URL}/notifications/user/${userId}/stories`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  return handleResponse(response);
+};
+
+/**
+ * Get admin's active stories (Admin only)
+ */
+export const getAdminStories = async () => {
+  const response = await fetch(`${API_BASE_URL}/notifications/admin/stories`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+/**
+ * Delete admin story (Admin only)
+ * @param {string} storyId - Story/notification ID
+ */
+export const deleteAdminStory = async (storyId) => {
+  const response = await fetch(`${API_BASE_URL}/notifications/admin/story/${storyId}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+/**
+ * Send broadcast notification with media files (stories)
+ * @param {FormData} formData - Form data with files and notification details
+ */
+export const sendBroadcastNotificationWithMedia = async (formData) => {
+  const token = localStorage.getItem('adminToken') || localStorage.getItem('authToken') || localStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/notifications/admin/broadcast`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+      // Don't set Content-Type for FormData - browser will set it with boundary
+    },
+    body: formData,
+  });
+  return handleResponse(response);
+};

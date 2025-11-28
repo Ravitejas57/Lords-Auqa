@@ -8,6 +8,9 @@ import {
 } from "react-icons/fi";
 import L from "leaflet";
 import { getAllUsers, getPendingUsers, getApprovedUsers, getRejectedUsers, updateUserSeeds } from "../services/adminApi";
+import { getAdminStories, deleteAdminStory } from "../services/notificationService";
+import Stories from './Stories';
+import StoryViewer from './StoryViewer';
 
 // Import CSS for Leaflet
 import 'leaflet/dist/leaflet.css';
@@ -350,9 +353,10 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
   });
   const [isResetting, setIsResetting] = useState(false);
   const [seedsData, setSeedsData] = useState({
-    seedsAvailable: user.seedsAvailable || 0,
-    seedsSold: user.seedsSold || 0,
-    activeBatches: user.activeBatches || 0
+    seedsCount: user.seedsCount || 0,
+    bonus: user.bonus || 0,
+    price: user.price || 0,
+    seedType: user.seedType || 'Hardyline'
   });
   const [isSavingSeeds, setIsSavingSeeds] = useState(false);
 
@@ -763,7 +767,7 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               className="seeds-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr',
+                gridTemplateColumns: '1fr 1fr',
                 gap: '0.75rem',
                 marginBottom: '1rem'
               }}
@@ -779,8 +783,8 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               >
                 <input
                   type="number"
-                  value={seedsData.seedsAvailable}
-                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedsAvailable: parseInt(e.target.value) || 0 }))}
+                  value={seedsData.seedsCount}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedsCount: parseInt(e.target.value) || 0 }))}
                   style={{
                     width: '100%',
                     fontSize: '1.25rem',
@@ -793,7 +797,7 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
                     backgroundColor: 'white'
                   }}
                 />
-                <div style={{ fontSize: '0.75rem', color: '#0c4a6e', fontWeight: '500', marginTop: '0.25rem' }}>Seeds Available</div>
+                <div style={{ fontSize: '0.75rem', color: '#0c4a6e', fontWeight: '500', marginTop: '0.25rem' }}>Seeds Count</div>
               </div>
 
               <div
@@ -807,8 +811,8 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               >
                 <input
                   type="number"
-                  value={seedsData.seedsSold}
-                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedsSold: parseInt(e.target.value) || 0 }))}
+                  value={seedsData.bonus}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, bonus: parseInt(e.target.value) || 0 }))}
                   style={{
                     width: '100%',
                     fontSize: '1.25rem',
@@ -821,7 +825,7 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
                     backgroundColor: 'white'
                   }}
                 />
-                <div style={{ fontSize: '0.75rem', color: '#14532d', fontWeight: '500', marginTop: '0.25rem' }}>Seeds Sold</div>
+                <div style={{ fontSize: '0.75rem', color: '#14532d', fontWeight: '500', marginTop: '0.25rem' }}>Bonus</div>
               </div>
 
               <div
@@ -835,8 +839,9 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               >
                 <input
                   type="number"
-                  value={seedsData.activeBatches}
-                  onChange={(e) => setSeedsData(prev => ({ ...prev, activeBatches: parseInt(e.target.value) || 0 }))}
+                  step="0.01"
+                  value={seedsData.price}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
                   style={{
                     width: '100%',
                     fontSize: '1.25rem',
@@ -849,7 +854,36 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
                     backgroundColor: 'white'
                   }}
                 />
-                <div style={{ fontSize: '0.75rem', color: '#713f12', fontWeight: '500', marginTop: '0.25rem' }}>Active Batches</div>
+                <div style={{ fontSize: '0.75rem', color: '#713f12', fontWeight: '500', marginTop: '0.25rem' }}>Price</div>
+              </div>
+
+              <div
+                style={{
+                  padding: '0.75rem',
+                  backgroundColor: '#fce7f3',
+                  border: '1px solid #fbcfe8',
+                  borderRadius: '0.5rem',
+                  textAlign: 'center'
+                }}
+              >
+                <input
+                  type="text"
+                  value={seedsData.seedType}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedType: e.target.value }))}
+                  placeholder="Enter seed type"
+                  style={{
+                    width: '100%',
+                    fontSize: '1.25rem',
+                    fontWeight: '700',
+                    color: '#9f1239',
+                    textAlign: 'center',
+                    border: '1px solid #fbcfe8',
+                    borderRadius: '0.375rem',
+                    padding: '0.25rem',
+                    backgroundColor: 'white'
+                  }}
+                />
+                <div style={{ fontSize: '0.75rem', color: '#881337', fontWeight: '500', marginTop: '0.25rem' }}>Seed Type</div>
               </div>
             </div>
 
@@ -1158,8 +1192,15 @@ const AdminDashboardContent = () => {
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  // Stories state
+  const [stories, setStories] = useState([]);
+  const [showStoryViewer, setShowStoryViewer] = useState(false);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+  const [loadingStories, setLoadingStories] = useState(false);
+
   useEffect(() => {
     fetchAllUserData();
+    loadAdminStories();
   }, []);
 
   const fetchAllUserData = async () => {
@@ -1197,6 +1238,46 @@ const AdminDashboardContent = () => {
       console.error('Error fetching user data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Load admin stories
+  const loadAdminStories = async () => {
+    try {
+      setLoadingStories(true);
+      const response = await getAdminStories();
+      if (response.success) {
+        setStories(response.stories || []);
+      }
+    } catch (error) {
+      console.error('Error loading admin stories:', error);
+    } finally {
+      setLoadingStories(false);
+    }
+  };
+
+  // Handle story press
+  const handleStoryPress = (index) => {
+    setSelectedStoryIndex(index);
+    setShowStoryViewer(true);
+  };
+
+  // Handle delete story
+  const handleDeleteStory = async (storyId) => {
+    if (!window.confirm('Are you sure you want to delete this story? It will be removed from all users.')) {
+      return;
+    }
+
+    try {
+      const response = await deleteAdminStory(storyId);
+      if (response.success) {
+        // Reload stories
+        loadAdminStories();
+        alert('Story deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting story:', error);
+      alert('Failed to delete story');
     }
   };
 
@@ -1359,6 +1440,26 @@ const handlePasswordReset = async (userId, newPassword) => {
           Welcome back! Here's what's happening with your platform.
         </p>
       </div>
+
+      {/* My Status - Admin Stories */}
+      {stories.length > 0 && (
+        <div className="admin-card" style={{ marginBottom: '2rem' }}>
+          <div className="admin-card-header">
+            <div className="admin-card-title">
+              <h3>My Status</h3>
+              <p>Your active stories visible to all users</p>
+            </div>
+          </div>
+          <div className="admin-card-content">
+            <Stories
+              stories={stories}
+              onStoryPress={handleStoryPress}
+              showDelete={true}
+              onDelete={handleDeleteStory}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="admin-stats-grid">
@@ -1919,6 +2020,15 @@ const handlePasswordReset = async (userId, newPassword) => {
           onClose={() => setShowFullscreenImage(false)}
         />
       )}
+
+      {/* Story Viewer Modal */}
+      <StoryViewer
+        visible={showStoryViewer}
+        stories={stories}
+        initialIndex={selectedStoryIndex}
+        onClose={() => setShowStoryViewer(false)}
+        onStoryViewed={() => {}} // Admin doesn't need to mark as viewed
+      />
     </div>
   );
 };
