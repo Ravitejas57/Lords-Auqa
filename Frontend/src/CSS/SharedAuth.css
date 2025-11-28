@@ -69,7 +69,7 @@
   min-height: 100vh;
   display: flex;
   background: var(--auth-bg);
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-weight: 500;
   transition: background-color 0.3s ease;
 }
@@ -204,7 +204,7 @@
   border: 2px solid var(--auth-border);
   border-radius: var(--auth-radius-md);
   font-size: 1rem;
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-weight: 500;
   color: var(--auth-text-primary);
   background: var(--auth-card-bg);
@@ -236,7 +236,7 @@
   border-radius: var(--auth-radius-md);
   font-size: 1rem;
   font-weight: 700;
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   cursor: pointer;
   transition: var(--auth-transition);
   box-shadow: var(--auth-shadow-sm);
@@ -371,7 +371,7 @@
   color: var(--auth-text-primary);
   font-weight: 700;
   font-size: 0.95rem;
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   cursor: pointer;
   box-shadow: var(--auth-shadow-md);
   transition: var(--auth-transition);

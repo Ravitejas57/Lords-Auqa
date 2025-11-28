@@ -6,7 +6,7 @@
 .admin-reports-page {
   min-height: 100vh;
   background: var(--admin-bg, #F5F7FA);
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   padding: var(--admin-spacing-xl, 2rem);
 }
 

@@ -81,11 +81,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.primary,
     marginBottom: 4,
+    fontFamily: 'Nunito_400Regular',
   },
   subtitle: {
     fontSize: 20,
     fontWeight: '600',
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   loader: {
     marginTop: 40,

@@ -290,12 +290,14 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 16,
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   userName: {
     fontSize: 24,
     fontWeight: '700',
     color: Colors.text,
     marginTop: 4,
+    fontFamily: 'Nunito_400Regular',
   },
   loadingContainer: {
     alignItems: 'center',
@@ -306,6 +308,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 14,
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   statsGrid: {
     gap: 16,
@@ -357,10 +360,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.text,
     marginBottom: 4,
+    fontFamily: 'Nunito_400Regular',
   },
   statLabel: {
     fontSize: 14,
     color: Colors.textLight,
     fontWeight: '500',
+    fontFamily: 'Nunito_400Regular',
   },
 });

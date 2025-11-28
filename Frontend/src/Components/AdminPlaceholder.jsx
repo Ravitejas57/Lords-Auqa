@@ -10,7 +10,7 @@ const AdminPlaceholder = ({ title, description, icon: Icon }) => {
       minHeight: '100vh',
       background: '#F5F7FA',
       padding: '2rem',
-      fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif"
+      fontFamily: "'Nunito', sans-serif"
     }}>
       <div style={{
         display: 'flex',

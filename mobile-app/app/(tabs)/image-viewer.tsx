@@ -149,18 +149,6 @@ export default function ImageViewerScreen() {
     );
   };
 
-  const getStatusInfo = () => {
-    if (!image) return { color: '#f59e0b', icon: 'time', text: 'Pending Review' };
-    if (image.status === 'approved' || image.adminFeedback?.action === 'approve') {
-      return { color: '#10b981', icon: 'checkmark-circle', text: 'Approved' };
-    } else if (image.status === 'rejected' || image.adminFeedback?.action === 'decline') {
-      return { color: '#ef4444', icon: 'close-circle', text: 'Rejected' };
-    } else {
-      return { color: '#f59e0b', icon: 'time', text: 'Pending Review' };
-    }
-  };
-
-  const statusInfo = getStatusInfo();
 
   const handleImagePress = () => {
     setFullScreenMode(true);
@@ -515,11 +503,6 @@ export default function ImageViewerScreen() {
             </Pressable>
 
             <View style={styles.infoCard}>
-              <View style={[styles.statusBadge, { backgroundColor: statusInfo.color }]}>
-                <Ionicons name={statusInfo.icon as any} size={20} color={Colors.white} />
-                <Text style={styles.statusText}>{statusInfo.text}</Text>
-              </View>
-
               {image.uploadedAt && (
                 <View style={styles.infoRow}>
                   <Ionicons name="calendar-outline" size={20} color={Colors.textLight} />
@@ -537,22 +520,6 @@ export default function ImageViewerScreen() {
                   <Text style={styles.infoValue}>
                     {image.location.latitude.toFixed(6)}, {image.location.longitude.toFixed(6)}
                   </Text>
-                </View>
-              )}
-
-              {image.adminFeedback?.message && (
-                <View style={styles.feedbackBox}>
-                  <View style={styles.feedbackHeader}>
-                    <Ionicons
-                      name={statusInfo.icon as any}
-                      size={18}
-                      color={statusInfo.color}
-                    />
-                    <Text style={[styles.feedbackTitle, { color: statusInfo.color }]}>
-                      Admin Feedback
-                    </Text>
-                  </View>
-                  <Text style={styles.feedbackMessage}>{image.adminFeedback.message}</Text>
                 </View>
               )}
             </View>

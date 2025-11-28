@@ -642,10 +642,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.text,
     marginBottom: 4,
+    fontFamily: 'Nunito_400Regular',
   },
   headerSubtitle: {
     fontSize: 14,
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   progressCard: {
     backgroundColor: Colors.white,
@@ -668,11 +670,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: Colors.text,
+    fontFamily: 'Nunito_400Regular',
   },
   progressSubtitle: {
     fontSize: 14,
     color: Colors.textLight,
     marginTop: 2,
+    fontFamily: 'Nunito_400Regular',
   },
   progressBar: {
     height: 8,
@@ -693,11 +697,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.text,
     marginBottom: 8,
+    fontFamily: 'Nunito_400Regular',
   },
   sectionSubtitle: {
     fontSize: 14,
     color: Colors.textLight,
     marginBottom: 16,
+    fontFamily: 'Nunito_400Regular',
   },
   imageGrid: {
     flexDirection: 'row',
@@ -738,12 +744,14 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     marginTop: 8,
     textAlign: 'center',
+    fontFamily: 'Nunito_400Regular',
   },
   uploadSubtext: {
     fontSize: 12,
     color: Colors.textLight,
     marginTop: 4,
     textAlign: 'center',
+    fontFamily: 'Nunito_400Regular',
   },
   lockedText: {
     fontSize: 14,
@@ -751,12 +759,14 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginTop: 8,
     textAlign: 'center',
+    fontFamily: 'Nunito_400Regular',
   },
   lockedSubtext: {
     fontSize: 12,
     color: '#9ca3af',
     marginTop: 4,
     textAlign: 'center',
+    fontFamily: 'Nunito_400Regular',
   },
   imageOverlay: {
     position: 'absolute',
@@ -815,6 +825,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 12,
     fontWeight: '600',
+    fontFamily: 'Nunito_400Regular',
   },
   slotFooter: {
     flexDirection: 'row',
@@ -827,6 +838,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: Colors.textLight,
+    fontFamily: 'Nunito_400Regular',
   },
   rejectionBox: {
     backgroundColor: '#fef2f2',
@@ -846,16 +858,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: '#dc2626',
+    fontFamily: 'Nunito_400Regular',
   },
   rejectionMessage: {
     fontSize: 12,
     color: '#991b1b',
     marginBottom: 6,
+    fontFamily: 'Nunito_400Regular',
   },
   rejectionAction: {
     fontSize: 11,
     color: '#dc2626',
     fontWeight: '600',
+    fontFamily: 'Nunito_400Regular',
   },
   approvalBox: {
     backgroundColor: '#f0fdf4',
@@ -875,10 +890,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: '#10b981',
+    fontFamily: 'Nunito_400Regular',
   },
   approvalMessage: {
     fontSize: 12,
     color: '#065f46',
+    fontFamily: 'Nunito_400Regular',
   },
   loadingOverlay: {
     flex: 1,
@@ -898,5 +915,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text,
     fontWeight: '600',
+    fontFamily: 'Nunito_400Regular',
   },
 });
