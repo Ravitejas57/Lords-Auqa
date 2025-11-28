@@ -1,5 +1,5 @@
 .invoice-card-container {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .invoice-card {
@@ -7,7 +7,6 @@
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .invoice-header {
@@ -22,14 +21,14 @@
   font-size: 1.125rem;
   font-weight: 700;
   color: #111827;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03125rem;
 }
 
 .invoice-number {
   font-size: 0.75rem;
   color: #6b7280;
   margin-top: 0.25rem;
-  font-family: 'Courier New', monospace;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .status-badge {
@@ -211,6 +210,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  font-family: 'Nunito', sans-serif;
 }
 
 .action-button:hover {
@@ -223,25 +223,133 @@
   transform: translateY(0);
 }
 
+.action-button span {
+  display: inline-block;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
+  .invoice-card-container {
+    margin-bottom: 0.875rem;
+  }
+
   .invoice-header {
     flex-direction: column;
     gap: 1rem;
+    padding: 0.875rem;
+  }
+
+  .invoice-title {
+    font-size: 1rem;
+  }
+
+  .section {
+    padding: 0.875rem;
   }
 
   .row {
     flex-direction: column;
+    gap: 0.75rem;
   }
 
   .table-header,
   .table-row {
     flex-direction: column;
     gap: 0.5rem;
+    padding: 0.75rem;
   }
 
   .table-header-text,
   .table-cell {
     text-align: left !important;
+  }
+
+  .images-grid {
+    gap: 0.5rem;
+  }
+
+  .image-thumb {
+    width: 60px;
+    height: 60px;
+  }
+
+  .action-button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .invoice-card {
+    border-radius: 0.5rem;
+  }
+
+  .invoice-header {
+    padding: 0.75rem;
+  }
+
+  .invoice-title {
+    font-size: 0.9375rem;
+  }
+
+  .invoice-number {
+    font-size: 0.6875rem;
+  }
+
+  .section {
+    padding: 0.75rem;
+  }
+
+  .section-title {
+    font-size: 0.75rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .label {
+    font-size: 0.625rem;
+  }
+
+  .value {
+    font-size: 0.8125rem;
+  }
+
+  .table-header,
+  .table-row {
+    padding: 0.625rem;
+  }
+
+  .table-header-text {
+    font-size: 0.6875rem;
+  }
+
+  .table-cell {
+    font-size: 0.8125rem;
+  }
+
+  .total-value {
+    font-size: 0.9375rem;
+  }
+
+  .image-thumb {
+    width: 50px;
+    height: 50px;
+  }
+
+  .image-label {
+    font-size: 0.5625rem;
+  }
+
+  .footer {
+    padding: 0.75rem;
+  }
+
+  .footer-text {
+    font-size: 0.625rem;
+  }
+
+  .action-button {
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.875rem;
   }
 }
 

@@ -228,8 +228,8 @@ const InvoiceCard = ({ transaction, onImagePress }) => {
       {/* Action Button */}
       <div className="actions">
         <button className="action-button" onClick={handleShare}>
-          <FiImage style={{ fontSize: '20px', marginRight: '8px' }} />
-          Share/Print Invoice
+          <FiImage style={{ fontSize: '20px' }} />
+          <span>Share Invoice</span>
         </button>
       </div>
     </div>

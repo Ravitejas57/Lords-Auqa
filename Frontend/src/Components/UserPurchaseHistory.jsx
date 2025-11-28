@@ -17,23 +17,31 @@ const UserPurchaseHistory = () => {
 
   const loadHistory = async () => {
     try {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      const userId = userData?.userId || userData?._id || userData?.id;
+      // Get userId from localStorage (same way as UserDashboard.jsx)
+      const userId = localStorage.getItem("userId");
       
       if (!userId) {
-        console.error('User ID not found');
+        console.error('User ID not found in localStorage');
         setLoading(false);
         return;
       }
 
+      console.log('Loading transaction history for userId:', userId);
       setLoading(true);
       const response = await getUserTransactionHistory(userId);
       
+      console.log('Transaction history response:', response);
+      
       if (response.success) {
         setTransactionHistory(response.transactions || []);
+        console.log('Loaded transactions:', response.transactions?.length || 0);
+      } else {
+        console.error('Failed to load transaction history:', response);
+        setTransactionHistory([]);
       }
     } catch (error) {
       console.error('Error loading transaction history:', error);
+      setTransactionHistory([]);
     } finally {
       setLoading(false);
     }
@@ -68,7 +76,7 @@ const UserPurchaseHistory = () => {
         <div>
           <h1 className="purchase-history-title">Purchase History</h1>
           <p className="purchase-history-subtitle">
-            View all completed hatchery purchases
+            Your completed hatchery approvals will appear here
           </p>
         </div>
         <button

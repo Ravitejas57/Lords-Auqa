@@ -161,6 +161,25 @@ export const getUserTransactionHistory = async (userId) => {
   }
 };
 
+// Get admin transaction history (matches mobile app)
+export const getAdminTransactionHistory = async (adminId) => {
+  try {
+    if (!adminId) {
+      throw new Error('Admin ID is required');
+    }
+    const response = await fetch(`${API_BASE_URL}/hatcheries/transactions/admin?adminId=${encodeURIComponent(adminId)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching admin transaction history:', error);
+    throw error;
+  }
+};
+
 // Get all transaction history (for admin - all users)
 export const getAllTransactionHistory = async (adminId = null) => {
   try {

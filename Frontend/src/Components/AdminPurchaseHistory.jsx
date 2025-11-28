@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiRefreshCw, FiClock, FiImage, FiX } from 'react-icons/fi';
-import { getAllTransactionHistory } from '../services/adminApi';
+import { getAdminTransactionHistory } from '../services/adminApi';
 import InvoiceCard from './InvoiceCard';
 import '../CSS/PurchaseHistory.css';
 
@@ -18,13 +18,32 @@ const AdminPurchaseHistory = () => {
   const loadHistory = async () => {
     try {
       const adminData = JSON.parse(localStorage.getItem('adminData'));
-      const adminId = adminData?.profile?._id || adminData?._id || adminData?.id;
-
+      
+      // Try multiple adminId formats (MongoDB ObjectId and profileAdminId string)
+      const adminIdMongo = adminData?.profile?._id || adminData?._id || adminData?.id;
+      const adminIdString = adminData?.profile?.adminId || adminData?.adminId;
+      
+      console.log('Trying adminId formats:', { adminIdMongo, adminIdString });
+      
       setLoading(true);
-      const response = await getAllTransactionHistory(adminId);
+      
+      // Try querying with MongoDB ObjectId first
+      let response = await getAdminTransactionHistory(adminIdMongo);
+      console.log('Response with MongoDB ObjectId:', response);
+      
+      // If no results and we have a different adminId format, try that too
+      if (response.success && response.transactions.length === 0 && adminIdString && adminIdString !== adminIdMongo) {
+        console.log('No transactions found with MongoDB ObjectId, trying profileAdminId:', adminIdString);
+        const response2 = await getAdminTransactionHistory(adminIdString);
+        console.log('Response with profileAdminId:', response2);
+        if (response2.success && response2.transactions.length > 0) {
+          response = response2;
+        }
+      }
       
       if (response.success) {
         setTransactionHistory(response.transactions || []);
+        console.log('Final transactions loaded:', response.transactions.length);
       }
     } catch (error) {
       console.error('Error loading transaction history:', error);
