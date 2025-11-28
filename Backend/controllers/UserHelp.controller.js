@@ -372,6 +372,14 @@ exports.closeConversation = async (req, res) => {
     }
 
     conversation.status = 'closed';
+
+    // Mark all unread user messages as read when admin closes the conversation
+    conversation.messages.forEach(msg => {
+      if (msg.sender === 'user' && !msg.isRead) {
+        msg.isRead = true;
+      }
+    });
+
     await conversation.save();
 
     console.log('✅ Conversation closed:', conversationId);
@@ -564,7 +572,11 @@ exports.getUserUnreadCount = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const conversations = await Conversation.find({ userId });
+    // Only count unread messages from OPEN conversations
+    const conversations = await Conversation.find({
+      userId,
+      status: 'open'  // Only count unread messages from open conversations
+    });
     let unreadCount = 0;
 
     conversations.forEach(conv => {
@@ -603,8 +615,11 @@ exports.getAdminUnreadCount = async (req, res) => {
       });
     }
 
-    // Query conversations using the admin's MongoDB ObjectId
-    const conversations = await Conversation.find({ adminId: admin._id });
+    // Query only OPEN conversations using the admin's MongoDB ObjectId
+    const conversations = await Conversation.find({
+      adminId: admin._id,
+      status: 'open'  // Only count unread messages from open conversations
+    });
     let unreadCount = 0;
 
     conversations.forEach(conv => {
