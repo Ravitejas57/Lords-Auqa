@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { FiBell, FiAlertCircle, FiCheckCircle, FiSend, FiLoader, FiClock, FiUsers } from 'react-icons/fi';
-import { sendBroadcastNotification, getNotificationHistory } from '../services/notificationService';
+import React, { useState, useEffect, useRef } from 'react';
+import { FiBell, FiAlertCircle, FiCheckCircle, FiSend, FiLoader, FiClock, FiUsers, FiCamera, FiImage, FiVideo, FiX, FiPlus } from 'react-icons/fi';
+import { sendBroadcastNotificationWithMedia, getNotificationHistory } from '../services/notificationService';
 import { getApprovedUsers } from '../services/adminApi';
 import '../CSS/AdminDashboard.css';
 
@@ -22,6 +22,10 @@ const AdminNotifications = () => {
   const [assignedUsers, setAssignedUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
+  const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -109,11 +113,61 @@ const AdminNotifications = () => {
     }
   };
 
+  // Media handling functions
+  const handleMediaPickerOpen = () => {
+    setShowMediaPicker(true);
+  };
+
+  const handleCameraCapture = () => {
+    setShowMediaPicker(false);
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click();
+    }
+  };
+
+  const handleMediaLibraryPick = () => {
+    setShowMediaPicker(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    if (selectedFiles.length + files.length > 5) {
+      showAlert('error', 'You can upload a maximum of 5 files');
+      return;
+    }
+
+    // Create preview objects
+    const newFiles = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+      type: file.type,
+      name: file.name
+    }));
+
+    setSelectedFiles(prev => [...prev, ...newFiles]);
+  };
+
+  const handleRemoveFile = (index) => {
+    setSelectedFiles(prev => {
+      const newFiles = [...prev];
+      // Revoke object URL to free memory
+      URL.revokeObjectURL(newFiles[index].preview);
+      newFiles.splice(index, 1);
+      return newFiles;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.message.trim()) {
-      showAlert('error', 'Please enter a message');
+    // Message is optional if media files are uploaded
+    if (!formData.message.trim() && selectedFiles.length === 0) {
+      showAlert('error', 'Please enter a message or upload media');
       return;
     }
 
@@ -129,13 +183,25 @@ const AdminNotifications = () => {
       const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
       const adminId = adminData.profile?.adminId || adminData.adminId || adminData.id || adminData._id;
 
-      // Add adminId to formData for filtering users by assigned admin
-      const notificationData = {
-        ...formData,
-        adminId
-      };
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('target', formData.target);
+      formDataToSend.append('type', formData.type);
+      formDataToSend.append('priority', formData.priority);
+      formDataToSend.append('message', formData.message);
+      formDataToSend.append('adminId', adminId);
 
-      const response = await sendBroadcastNotification(notificationData);
+      // Add userIds if specific users selected
+      if (formData.target === 'users' && formData.userIds.length > 0) {
+        formDataToSend.append('userIds', JSON.stringify(formData.userIds));
+      }
+
+      // Add files if any
+      selectedFiles.forEach((fileObj) => {
+        formDataToSend.append('files', fileObj.file);
+      });
+
+      const response = await sendBroadcastNotificationWithMedia(formDataToSend);
       showAlert('success', response.message || `Notification sent to ${response.count} users`);
 
       // Reset form
@@ -144,6 +210,10 @@ const AdminNotifications = () => {
         message: ''
       }));
       setSelectedUserIds([]);
+
+      // Clean up file previews and reset
+      selectedFiles.forEach(fileObj => URL.revokeObjectURL(fileObj.preview));
+      setSelectedFiles([]);
 
       // Reload history to show the new notification
       loadHistory();
@@ -290,21 +360,136 @@ const AdminNotifications = () => {
               </div>
             </div>
 
-            {/* Message Field */}
+            {/* Message Field with Media Upload */}
             <div className="admin-form-group">
-              <label className="admin-form-label">Message</label>
-              <textarea
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                placeholder="Enter your notification message here..."
-                className="admin-form-textarea"
-                rows="5"
-                required
-              />
+              <label className="admin-form-label">
+                Message {selectedFiles.length > 0 && <span style={{ fontWeight: 'normal', fontStyle: 'italic', color: '#6b7280' }}>(Optional)</span>}
+              </label>
+              <div style={{ position: 'relative' }}>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder={selectedFiles.length > 0 ? "Enter notification message (optional)..." : "Enter your notification message here..."}
+                  className="admin-form-textarea"
+                  rows="5"
+                  style={{ paddingRight: '3rem' }}
+                />
+                <button
+                  type="button"
+                  onClick={handleMediaPickerOpen}
+                  style={{
+                    position: 'absolute',
+                    right: '0.75rem',
+                    bottom: '0.75rem',
+                    background: '#5B7C99',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '36px',
+                    height: '36px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#4a6b85'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#5B7C99'}
+                >
+                  <FiPlus size={20} />
+                </button>
+              </div>
+
+              {/* File Previews */}
+              {selectedFiles.length > 0 && (
+                <div style={{ marginTop: '1rem' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                    {selectedFiles.map((fileObj, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          position: 'relative',
+                          width: '100px',
+                          height: '100px',
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          border: '2px solid #e5e7eb',
+                          backgroundColor: '#f9fafb'
+                        }}
+                      >
+                        {fileObj.type.startsWith('image/') ? (
+                          <img
+                            src={fileObj.preview}
+                            alt={fileObj.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <div style={{
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            gap: '0.25rem'
+                          }}>
+                            <FiVideo size={32} color="#5B7C99" />
+                            <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Video</span>
+                          </div>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFile(index)}
+                          style={{
+                            position: 'absolute',
+                            top: '4px',
+                            right: '4px',
+                            background: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '24px',
+                            height: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            padding: 0
+                          }}
+                        >
+                          <FiX size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <span className="admin-form-help" style={{ marginTop: '0.5rem', display: 'block' }}>
+                    {selectedFiles.length} file(s) selected (max 5)
+                  </span>
+                </div>
+              )}
+
               <span className="admin-form-help">
                 {formData.message.length} characters
               </span>
+
+              {/* Hidden file inputs */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,video/*"
+                multiple
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+              />
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*,video/*"
+                capture="environment"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+              />
             </div>
 
             {/* Submit Button */}
@@ -428,6 +613,123 @@ const AdminNotifications = () => {
           )}
         </div>
       </div>
+
+      {/* Media Picker Modal */}
+      {showMediaPicker && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999
+          }}
+          onClick={() => setShowMediaPicker(false)}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '16px',
+              padding: '2rem',
+              width: '90%',
+              maxWidth: '400px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700', color: '#111827' }}>Select Media</h3>
+              <button
+                onClick={() => setShowMediaPicker(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0.25rem',
+                  color: '#6b7280'
+                }}
+              >
+                <FiX size={24} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <button
+                onClick={handleCameraCapture}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '1.5rem',
+                  backgroundColor: '#f9fafb',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#5B7C99';
+                  e.currentTarget.style.backgroundColor = '#f0f4f8';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#e5e7eb';
+                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                }}
+              >
+                <FiCamera size={32} color="#5B7C99" />
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.125rem', fontWeight: '700', color: '#111827', marginBottom: '0.25rem' }}>
+                    Camera
+                  </div>
+                  <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                    Take photos or record videos
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={handleMediaLibraryPick}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '1.5rem',
+                  backgroundColor: '#f9fafb',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#5B7C99';
+                  e.currentTarget.style.backgroundColor = '#f0f4f8';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#e5e7eb';
+                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                }}
+              >
+                <FiImage size={32} color="#5B7C99" />
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.125rem', fontWeight: '700', color: '#111827', marginBottom: '0.25rem' }}>
+                    Media Library
+                  </div>
+                  <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                    Select photos or videos from device
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

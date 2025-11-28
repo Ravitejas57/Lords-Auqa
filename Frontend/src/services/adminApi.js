@@ -106,3 +106,76 @@ export const resetUserPassword = async (userId, newPassword) => {
   });
   return handleResponse(response);
 };
+
+// Get user hatcheries (for admin view)
+export const getUserHatcheries = async (userId, forAdminView = false) => {
+  const queryParams = forAdminView ? '?forAdminView=true' : '';
+  const response = await fetch(`${API_BASE_URL}/hatcheries/user/${userId}${queryParams}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return handleResponse(response);
+};
+
+// Approve hatchery
+export const approveHatchery = async (data) => {
+  const response = await fetch(`${API_BASE_URL}/hatcheries/approve`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return handleResponse(response);
+};
+
+// Delete and reset hatchery
+export const deleteAndResetHatchery = async (data) => {
+  const response = await fetch(`${API_BASE_URL}/hatcheries/delete-and-reset`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return handleResponse(response);
+};
+
+// ==================== TRANSACTION HISTORY ====================
+
+// Get user transaction history
+export const getUserTransactionHistory = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/hatcheries/transactions/user/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching user transaction history:', error);
+    throw error;
+  }
+};
+
+// Get all transaction history (for admin - all users)
+export const getAllTransactionHistory = async (adminId = null) => {
+  try {
+    const url = adminId
+      ? `${API_BASE_URL}/hatcheries/transactions/all?adminId=${adminId}`
+      : `${API_BASE_URL}/hatcheries/transactions/all`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching all transaction history:', error);
+    throw error;
+  }
+};

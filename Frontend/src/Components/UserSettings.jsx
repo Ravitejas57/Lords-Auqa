@@ -27,6 +27,16 @@ const UserSettings = ({ onProfileUpdate }) => {
     fetchUserProfile();
   }, []);
 
+  // Refresh profile data when window comes into focus (in case admin updated seeds info)
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchUserProfile();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
+
   const fetchUserProfile = async () => {
     try {
       // Get phone number from localStorage (same as UserDashboard)
@@ -61,9 +71,6 @@ const UserSettings = ({ onProfileUpdate }) => {
           district: data.user.district || "",
           pincode: data.user.pincode || "",
           address: data.user.address || "",
-          seedsAvailable: data.user.seedsAvailable || 0,
-          seedsSold: data.user.seedsSold || 0,
-          activeBatches: data.user.activeBatches || 0,
         });
       } else {
         setError("Failed to fetch user data");
@@ -127,7 +134,9 @@ const UserSettings = ({ onProfileUpdate }) => {
     setSaving(true);
     try {
       const formData = new FormData();
-      Object.keys(editData).forEach((key) => {
+      // Only include editable fields (exclude seeds information)
+      const editableFields = ['name', 'email', 'phoneNumber', 'country', 'state', 'district', 'pincode', 'address'];
+      editableFields.forEach((key) => {
         if (editData[key] !== undefined && editData[key] !== null) {
           formData.append(key, editData[key]);
         }
@@ -161,9 +170,11 @@ const UserSettings = ({ onProfileUpdate }) => {
         setImageFile(null);
         setImagePreview(null);
         setRemoveProfileImage(false);
+        
+        // Refresh local profile data
         fetchUserProfile();
 
-        // Notify parent to refresh profile data (for header update)
+        // Notify parent to refresh profile data (for header and stats cards update)
         if (onProfileUpdate) {
           onProfileUpdate();
         }
@@ -193,9 +204,6 @@ const UserSettings = ({ onProfileUpdate }) => {
         district: userData.district || "",
         pincode: userData.pincode || "",
         address: userData.address || "",
-        seedsAvailable: userData.seedsAvailable || 0,
-        seedsSold: userData.seedsSold || 0,
-        activeBatches: userData.activeBatches || 0,
       });
     }
   };
@@ -345,7 +353,7 @@ const UserSettings = ({ onProfileUpdate }) => {
                 }}>
                   <FiPackage /> Seeds Information
                 </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                   <div style={{
                     padding: '1rem',
                     backgroundColor: '#f0fdf4',
@@ -353,10 +361,10 @@ const UserSettings = ({ onProfileUpdate }) => {
                     border: '1px solid #bbf7d0'
                   }}>
                     <div style={{ fontSize: '0.75rem', color: '#166534', marginBottom: '0.25rem' }}>
-                      Seeds Available
+                      Seeds Count
                     </div>
                     <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#15803d' }}>
-                      {userData?.seedsAvailable || 0}
+                      {userData?.seedsCount || 0}
                     </div>
                   </div>
                   <div style={{
@@ -366,10 +374,10 @@ const UserSettings = ({ onProfileUpdate }) => {
                     border: '1px solid #fecaca'
                   }}>
                     <div style={{ fontSize: '0.75rem', color: '#991b1b', marginBottom: '0.25rem' }}>
-                      Seeds Sold
+                      Bonus
                     </div>
                     <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#dc2626' }}>
-                      {userData?.seedsSold || 0}
+                      {userData?.bonus || 0}
                     </div>
                   </div>
                   <div style={{
@@ -379,10 +387,23 @@ const UserSettings = ({ onProfileUpdate }) => {
                     border: '1px solid #bfdbfe'
                   }}>
                     <div style={{ fontSize: '0.75rem', color: '#1e40af', marginBottom: '0.25rem' }}>
-                      Active Batches
+                      Price
                     </div>
                     <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#2563eb' }}>
-                      {userData?.activeBatches || 0}
+                      ₹{userData?.price || 0}
+                    </div>
+                  </div>
+                  <div style={{
+                    padding: '1rem',
+                    backgroundColor: '#fef3c7',
+                    borderRadius: '0.5rem',
+                    border: '1px solid #fde047'
+                  }}>
+                    <div style={{ fontSize: '0.75rem', color: '#92400e', marginBottom: '0.25rem' }}>
+                      Seed Type
+                    </div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#a16207' }}>
+                      {userData?.seedType || 'N/A'}
                     </div>
                   </div>
                 </div>
@@ -584,39 +605,65 @@ const UserSettings = ({ onProfileUpdate }) => {
                   </div>
                 </div>
 
-                {/* Seeds Information - Edit Mode */}
+                {/* Seeds Information - Edit Mode (Read-Only) */}
                 <div className="form-section">
                   <h4 className="form-section-title">
                     <FiPackage style={{ marginRight: '0.5rem' }} /> Seeds Information
                   </h4>
                   <div className="form-grid">
                     <div className="form-field">
-                      <label>Seeds Available</label>
+                      <label>Seeds Count</label>
                       <input
-                        type="number"
-                        min="0"
-                        value={editData.seedsAvailable}
-                        onChange={(e) => handleEditChange("seedsAvailable", parseInt(e.target.value) || 0)}
+                        type="text"
+                        value={userData?.seedsCount?.toLocaleString() || 0}
+                        disabled
+                        style={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#6b7280',
+                          cursor: 'not-allowed'
+                        }}
                       />
                     </div>
 
                     <div className="form-field">
-                      <label>Seeds Sold</label>
+                      <label>Bonus</label>
                       <input
-                        type="number"
-                        min="0"
-                        value={editData.seedsSold}
-                        onChange={(e) => handleEditChange("seedsSold", parseInt(e.target.value) || 0)}
+                        type="text"
+                        value={userData?.bonus?.toLocaleString() || 0}
+                        disabled
+                        style={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#6b7280',
+                          cursor: 'not-allowed'
+                        }}
                       />
                     </div>
 
                     <div className="form-field">
-                      <label>Active Batches</label>
+                      <label>Price</label>
                       <input
-                        type="number"
-                        min="0"
-                        value={editData.activeBatches}
-                        onChange={(e) => handleEditChange("activeBatches", parseInt(e.target.value) || 0)}
+                        type="text"
+                        value={`₹${userData?.price?.toLocaleString() || 0}`}
+                        disabled
+                        style={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#6b7280',
+                          cursor: 'not-allowed'
+                        }}
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label>Seed Type</label>
+                      <input
+                        type="text"
+                        value={userData?.seedType || 'N/A'}
+                        disabled
+                        style={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#6b7280',
+                          cursor: 'not-allowed'
+                        }}
                       />
                     </div>
                   </div>

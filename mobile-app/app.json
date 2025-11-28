@@ -74,12 +74,6 @@
           "locationAlwaysAndWhenInUsePermission": "Allow HatchTrack to access your location to tag images with geographic data."
         }
       ],
-      [
-        "react-native-maps",
-        {
-          "googleMapsApiKey": ""
-        }
-      ],
       "expo-maps",
       "expo-font"
     ],

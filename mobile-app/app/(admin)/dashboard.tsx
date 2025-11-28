@@ -584,7 +584,7 @@ export default function AdminDashboardScreen() {
       const response = await addUser(payload);
 
       if (response.success) {
-        Alert.alert('Success', 'User created successfully!', [
+        Alert.alert('Success', 'Seller created successfully!', [
           {
             text: 'OK',
             onPress: () => {
@@ -614,11 +614,11 @@ export default function AdminDashboardScreen() {
           },
         ]);
       } else {
-        Alert.alert('Error', response.message || 'Failed to create user');
+        Alert.alert('Error', response.message || 'Failed to create seller');
       }
     } catch (error: any) {
-      console.error('Error creating user:', error);
-      Alert.alert('Error', error.message || 'Failed to create user');
+      console.error('Error creating seller:', error);
+      Alert.alert('Error', error.message || 'Failed to create seller');
     } finally {
       setAddingUser(false);
     }
@@ -1368,7 +1368,7 @@ export default function AdminDashboardScreen() {
             >
               <Ionicons name="arrow-back" size={24} color={Colors.text} />
             </Pressable>
-            <Text style={styles.addUserHeaderTitle}>Add New User</Text>
+            <Text style={styles.addUserHeaderTitle}>Add New Seller</Text>
             <View style={{ width: 24 }} />
           </View>
 

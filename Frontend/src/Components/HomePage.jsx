@@ -123,7 +123,6 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [formPopupOpen, setFormPopupOpen] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   // Counter animation state
   const [countersStarted, setCountersStarted] = useState(false);
@@ -207,6 +206,51 @@ const HomePage = () => {
       setMobileOpen(false);
     }
   };
+
+  // Handle contact form submission
+  const handleContactFormSubmit = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = {
+      name: form.querySelector('#contact-name').value,
+      phone: form.querySelector('#contact-phone').value,
+      email: form.querySelector('#contact-email').value,
+      subject: form.querySelector('#contact-subject').value,
+      message: form.querySelector('#contact-message').value
+    };
+
+    // Create email body
+    const emailSubject = encodeURIComponent(`Contact Form: ${formData.subject}`);
+    const emailBody = encodeURIComponent(
+      `Name: ${formData.name}\n` +
+      `Phone: ${formData.phone}\n` +
+      `Email: ${formData.email}\n` +
+      `Subject: ${formData.subject}\n\n` +
+      `Message:\n${formData.message}`
+    );
+
+    // Create WhatsApp message
+    const whatsappMessage = encodeURIComponent(
+      `Hello! I'm ${formData.name}.\n\n` +
+      `Phone: ${formData.phone}\n` +
+      `Email: ${formData.email}\n` +
+      `Subject: ${formData.subject}\n\n` +
+      `${formData.message}`
+    );
+
+    // Open email client
+    window.location.href = `mailto:mojeshbondu1@gmail.com?subject=${emailSubject}&body=${emailBody}`;
+
+    // Also open WhatsApp in a new tab (optional - user can choose)
+    setTimeout(() => {
+      window.open(`https://wa.me/919701308016?text=${whatsappMessage}`, '_blank');
+    }, 500);
+
+    // Reset form
+    form.reset();
+    alert('Thank you for your message! We have opened your email client and WhatsApp. Please send the message to contact us.');
+  };
+
 
   return (
     <div className="lords-root">
@@ -561,21 +605,6 @@ const HomePage = () => {
               </motion.div>
             </div>
 
-            {/* Bottom CTA */}
-            <motion.div
-              className="lords-features-cta"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.7 }}
-            >
-              <h3 className="lords-features-cta-title">Ready to Transform Your Aquaculture Business?</h3>
-              <p className="lords-features-cta-desc">Join hundreds of successful farmers who trust Lords Aqua Hatcheries</p>
-              <button className="lords-features-cta-btn" onClick={() => navigate("/user-login")}>
-                Get Started Today
-                <FiTrendingUp />
-              </button>
-            </motion.div>
           </div>
         </section>
 
@@ -612,8 +641,7 @@ const HomePage = () => {
                     </div>
                     <div className="method-details">
                       <h4>Phone</h4>
-                      <a href="tel:+919876543210">+91 98765 43210</a>
-                      <a href="tel:+918765432109">+91 87654 32109</a>
+                      <a href="tel:+919701308016">+91 97013 08016</a>
                     </div>
                   </motion.div>
 
@@ -630,8 +658,7 @@ const HomePage = () => {
                     </div>
                     <div className="method-details">
                       <h4>Email</h4>
-                      <a href="mailto:info@lordsaquahatcheries.com">info@lordsaquahatcheries.com</a>
-                      <a href="mailto:support@lordsaquahatcheries.com">support@lordsaquahatcheries.com</a>
+                      <a href="mailto:mojeshbondu1@gmail.com">mojeshbondu1@gmail.com</a>
                     </div>
                   </motion.div>
 
@@ -648,8 +675,8 @@ const HomePage = () => {
                     </div>
                     <div className="method-details">
                       <h4>Visit Us</h4>
-                      <p>123 Aquaculture Park</p>
-                      <p>Hyderabad, Telangana 500001</p>
+                      <p>Vemavaram, Tuni Coast</p>
+                      <p>Andhra Pradesh, 533401</p>
                     </div>
                   </motion.div>
                 </div>
@@ -693,7 +720,7 @@ const HomePage = () => {
                 <h3 className="form-title">Send us a Message</h3>
                 <p className="form-subtitle">Fill out the form and we'll get back to you within 24 hours</p>
 
-                <form className="modern-contact-form">
+                <form className="modern-contact-form" onSubmit={handleContactFormSubmit}>
                   <div className="form-row">
                     <div className="form-group">
                       <label htmlFor="contact-name">
@@ -716,7 +743,7 @@ const HomePage = () => {
                       <input
                         type="tel"
                         id="contact-phone"
-                        placeholder="+91 98765 43210"
+                        placeholder="+91 97013 08016"
                         required
                       />
                     </div>
@@ -877,230 +904,6 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* GET IN TOUCH SECTION - REDESIGNED */}
-        <section className="collaborate-section-new">
-          <div className="collaborate-bg-wrapper">
-            <div className="collaborate-bg-gradient"></div>
-          </div>
-
-          <div className="collaborate-content-container">
-            <motion.div
-              className="collaborate-header"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <span className="collaborate-badge">Let's Connect</span>
-              <h2 className="collaborate-main-title">Ready to Transform Your Aquaculture Business?</h2>
-              <p className="collaborate-main-subtitle">
-                Join hundreds of successful farmers who trust Lords Aqua Hatcheries for premium quality seeds
-              </p>
-            </motion.div>
-
-            <div className="collaborate-grid-new">
-              <motion.div
-                className="collaborate-card collaborate-card-1"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-              >
-                <div className="collaborate-card-inner">
-                  <div className="collaborate-icon-wrapper">
-                    <div className="collaborate-icon-bg"></div>
-                    <FiUsers className="collaborate-icon" />
-                  </div>
-                  <h3 className="collaborate-card-title">Partnership Opportunities</h3>
-                  <p className="collaborate-card-desc">
-                    Explore collaboration possibilities and grow together with our expanding network
-                  </p>
-                  <button className="collaborate-card-btn">
-                    Learn More
-                    <FiTrendingUp size={16} />
-                  </button>
-                </div>
-              </motion.div>
-
-              <motion.div
-                className="collaborate-card collaborate-card-2"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <div className="collaborate-card-inner">
-                  <div className="collaborate-icon-wrapper">
-                    <div className="collaborate-icon-bg"></div>
-                    <FiShoppingCart className="collaborate-icon" />
-                  </div>
-                  <h3 className="collaborate-card-title">Bulk Orders</h3>
-                  <p className="collaborate-card-desc">
-                    Special pricing for wholesale buyers, distributors, and large-scale operations
-                  </p>
-                  <button className="collaborate-card-btn">
-                    Get Quote
-                    <FiTrendingUp size={16} />
-                  </button>
-                </div>
-              </motion.div>
-
-              <motion.div
-                className="collaborate-card collaborate-card-3"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-              >
-                <div className="collaborate-card-inner">
-                  <div className="collaborate-icon-wrapper">
-                    <div className="collaborate-icon-bg"></div>
-                    <FiCheckCircle className="collaborate-icon" />
-                  </div>
-                  <h3 className="collaborate-card-title">Expert Consultation</h3>
-                  <p className="collaborate-card-desc">
-                    Get personalized guidance from our aquaculture experts for your specific needs
-                  </p>
-                  <button className="collaborate-card-btn">
-                    Book Session
-                    <FiTrendingUp size={16} />
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-
-            <motion.div
-              className="collaborate-cta-section"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <div className="collaborate-cta-content">
-                <h3>Have a specific inquiry?</h3>
-                <p>Our team is ready to assist you with any questions or requirements</p>
-              </div>
-              <motion.button
-                className="collaborate-primary-btn"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setFormPopupOpen(true)}
-              >
-                <FiMail size={20} />
-                <span>Start a Conversation</span>
-              </motion.button>
-            </motion.div>
-          </div>
-
-          {/* FORM POPUP MODAL */}
-          {formPopupOpen && (
-            <motion.div
-              className="lords-form-modal-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setFormPopupOpen(false)}
-            >
-              <motion.div
-                className="lords-form-modal-container"
-                initial={{ scale: 0.8, opacity: 0, y: 50 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.8, opacity: 0, y: 50 }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="lords-form-modal-bg">
-                  <div className="lords-form-modal-gradient"></div>
-                </div>
-
-                <button
-                  className="lords-form-modal-close"
-                  onClick={() => setFormPopupOpen(false)}
-                >
-                  <FiX />
-                </button>
-
-                <div className="lords-form-modal-content">
-                  <div className="lords-form-modal-header">
-                    <h2>Let's Collaborate</h2>
-                    <p>Share your details and let's create something amazing together</p>
-                  </div>
-
-                  <form className="lords-modal-form">
-                    <div className="lords-form-group">
-                      <label htmlFor="modal-name">Full Name *</label>
-                      <input
-                        type="text"
-                        id="modal-name"
-                        placeholder="Enter your full name"
-                        required
-                      />
-                    </div>
-
-                    <div className="lords-form-row">
-                      <div className="lords-form-group">
-                        <label htmlFor="modal-email">Email Address *</label>
-                        <input
-                          type="email"
-                          id="modal-email"
-                          placeholder="your.email@example.com"
-                          required
-                        />
-                      </div>
-
-                      <div className="lords-form-group">
-                        <label htmlFor="modal-phone">Phone Number *</label>
-                        <input
-                          type="tel"
-                          id="modal-phone"
-                          placeholder="+91 98765 43210"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="lords-form-group">
-                      <label htmlFor="modal-company">Company/Farm Name</label>
-                      <input
-                        type="text"
-                        id="modal-company"
-                        placeholder="Enter your company or farm name"
-                      />
-                    </div>
-
-                    <div className="lords-form-group">
-                      <label htmlFor="modal-inquiry">Type of Inquiry *</label>
-                      <select id="modal-inquiry" required>
-                        <option value="">Select inquiry type</option>
-                        <option value="partnership">Partnership Opportunity</option>
-                        <option value="bulk">Bulk Order</option>
-                        <option value="distribution">Distribution Rights</option>
-                        <option value="franchise">Franchise Opportunity</option>
-                        <option value="support">Technical Support</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-
-                    <div className="lords-form-group">
-                      <label htmlFor="modal-message">Your Message *</label>
-                      <textarea
-                        id="modal-message"
-                        rows="4"
-                        placeholder="Tell us about your inquiry, requirements, or how we can collaborate..."
-                        required
-                      ></textarea>
-                    </div>
-
-                    <button type="submit" className="lords-modal-submit-btn">
-                      <span>Send Message</span>
-                      <FiCheckCircle />
-                    </button>
-                  </form>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </section>
 
         {/* DOWNLOAD APP SECTION */}
         <section className="lords-download-section">
@@ -1191,7 +994,7 @@ const HomePage = () => {
 
       {/* WhatsApp Floating Button */}
       <a
-        href="https://wa.me/919876543210"
+        href="https://wa.me/919701308016"
         target="_blank"
         rel="noopener noreferrer"
         className="lords-whatsapp-float"

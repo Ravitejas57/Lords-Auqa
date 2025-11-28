@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Outlet, NavLink } from 'react-router-dom';
 import {
   FiHome, FiUsers, FiClock, FiXCircle, FiMessageSquare, FiUserPlus,
   FiBarChart2, FiSettings, FiHelpCircle, FiMenu, FiX,
-  FiUser, FiChevronDown, FiLogOut, FiPlus
+  FiUser, FiChevronDown, FiLogOut, FiPlus, FiFileText
 } from 'react-icons/fi';
 import '../CSS/AdminDashboard.css';
 
@@ -206,8 +206,7 @@ const AdminLayout = () => {
         <div className="admin-navbar-right">
           {/* Quick Actions */}
           <NavLink to="/admin/add-user" className="quick-action-btn">
-            <FiPlus />
-            <span>Add User</span>
+            <span>Add Seller</span>
           </NavLink>
 
 
@@ -321,8 +320,7 @@ const AdminLayout = () => {
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
             onClick={() => setSidebarOpen(false)}
           >
-            <FiUserPlus />
-            {!sidebarCollapsed && <span>Add User</span>}
+            {!sidebarCollapsed && <span>Add Seller</span>}
           </NavLink>
 
 
@@ -334,6 +332,15 @@ const AdminLayout = () => {
           >
             <FiSettings />
             {!sidebarCollapsed && <span>Settings</span>}
+          </NavLink>
+
+          <NavLink
+            to="/admin/purchase-history"
+            className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+            onClick={() => setSidebarOpen(false)}
+          >
+            <FiFileText />
+            {!sidebarCollapsed && <span>Purchase History</span>}
           </NavLink>
 
           <NavLink

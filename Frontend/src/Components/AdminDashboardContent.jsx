@@ -4,10 +4,13 @@ import {
   FiUsers, FiClock, FiCheckCircle, FiXCircle, FiMessageSquare,
   FiBarChart2, FiTrendingUp, FiTrendingDown, FiActivity, FiPhone,
   FiX, FiZoomOut, FiZoomIn, FiRotateCcw, FiMaximize, FiMinimize,
-  FiEye, FiUser, FiHome, FiMail, FiCopy, FiRefreshCw, FiKey, FiPackage, FiMapPin
+  FiEye, FiUser, FiHome, FiMail, FiCopy, FiRefreshCw, FiKey, FiPackage, FiMapPin, FiImage, FiTrash2
 } from "react-icons/fi";
 import L from "leaflet";
-import { getAllUsers, getPendingUsers, getApprovedUsers, getRejectedUsers, updateUserSeeds } from "../services/adminApi";
+import { getAllUsers, getPendingUsers, getApprovedUsers, getRejectedUsers, updateUserSeeds, getUserHatcheries, approveHatchery, deleteAndResetHatchery } from "../services/adminApi";
+import { getAdminStories, deleteAdminStory } from "../services/notificationService";
+import Stories from './Stories';
+import StoryViewer from './StoryViewer';
 
 // Import CSS for Leaflet
 import 'leaflet/dist/leaflet.css';
@@ -350,11 +353,124 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
   });
   const [isResetting, setIsResetting] = useState(false);
   const [seedsData, setSeedsData] = useState({
-    seedsAvailable: user.seedsAvailable || 0,
-    seedsSold: user.seedsSold || 0,
-    activeBatches: user.activeBatches || 0
+    seedsCount: user.seedsCount || 0,
+    bonus: user.bonus || 0,
+    price: user.price || 0,
+    seedType: user.seedType || 'Hardyline'
   });
   const [isSavingSeeds, setIsSavingSeeds] = useState(false);
+  
+  // Hatchery states
+  const [hatchery, setHatchery] = useState(null);
+  const [loadingHatchery, setLoadingHatchery] = useState(false);
+  const [approvingHatchery, setApprovingHatchery] = useState(false);
+  const [deletingHatchery, setDeletingHatchery] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+  const [showImageViewer, setShowImageViewer] = useState(false);
+
+  // Fetch hatchery data when modal opens
+  useEffect(() => {
+    if (user?.userId || user?._id) {
+      loadHatchery();
+    }
+  }, [user]);
+
+  const loadHatchery = async () => {
+    const userId = user?.userId || user?._id;
+    if (!userId) return;
+    
+    setLoadingHatchery(true);
+    try {
+      const response = await getUserHatcheries(userId, true);
+      if (response.success && response.hatcheries && response.hatcheries.length > 0) {
+        // Get the most recent hatchery (first one)
+        setHatchery(response.hatcheries[0]);
+      } else {
+        setHatchery(null);
+      }
+    } catch (error) {
+      console.error('Error loading hatchery:', error);
+      setHatchery(null);
+    } finally {
+      setLoadingHatchery(false);
+    }
+  };
+
+  // Check if all 4 images are uploaded
+  const allImagesApproved = hatchery?.images?.length === 4;
+
+  const handleApproveHatchery = async () => {
+    if (!hatchery || !user) return;
+
+    if (!window.confirm('Are you sure you want to approve this hatchery? This will complete the transaction and reset all image slots for the user.')) {
+      return;
+    }
+
+    setApprovingHatchery(true);
+    try {
+      // Get admin data from localStorage
+      const adminData = localStorage.getItem('adminData');
+      const admin = adminData ? JSON.parse(adminData) : null;
+
+      const response = await approveHatchery({
+        hatcheryId: hatchery._id,
+        userId: user.userId || user._id,
+        adminId: admin?.profile?._id || admin?._id || admin?.id,
+        adminName: admin?.name || 'Admin',
+      });
+
+      if (response.success) {
+        alert('Hatchery approved successfully! Image slots have been reset.');
+        loadHatchery(); // Reload to show reset state
+      } else {
+        alert(response.message || 'Failed to approve hatchery');
+      }
+    } catch (error) {
+      console.error('Error approving hatchery:', error);
+      alert(error.message || 'Failed to approve hatchery');
+    } finally {
+      setApprovingHatchery(false);
+    }
+  };
+
+  const handleDeleteHatchery = async () => {
+    if (!hatchery || !user) return;
+
+    if (!window.confirm('Are you sure you want to delete this hatchery? This will reset all image slots WITHOUT creating a purchase history entry. The slots will remain locked until you update the seeds count.')) {
+      return;
+    }
+
+    setDeletingHatchery(true);
+    try {
+      // Get admin data from localStorage
+      const adminData = localStorage.getItem('adminData');
+      const admin = adminData ? JSON.parse(adminData) : null;
+
+      const response = await deleteAndResetHatchery({
+        hatcheryId: hatchery._id,
+        userId: user.userId || user._id,
+        adminId: admin?.profile?._id || admin?._id || admin?.id,
+        adminName: admin?.name || 'Admin',
+      });
+
+      if (response.success) {
+        alert('Hatchery deleted successfully! Image slots have been reset and are now locked.');
+        loadHatchery(); // Reload to show reset state
+      } else {
+        alert(response.message || 'Failed to delete hatchery');
+      }
+    } catch (error) {
+      console.error('Error deleting hatchery:', error);
+      alert(error.message || 'Failed to delete hatchery');
+    } finally {
+      setDeletingHatchery(false);
+    }
+  };
+
+  const handleImageClick = (imageUrl) => {
+    setSelectedImageUrl(imageUrl);
+    setShowImageViewer(true);
+  };
 
   const handleSeedsUpdate = async () => {
     setIsSavingSeeds(true);
@@ -763,7 +879,7 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               className="seeds-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr',
+                gridTemplateColumns: '1fr 1fr',
                 gap: '0.75rem',
                 marginBottom: '1rem'
               }}
@@ -779,8 +895,8 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               >
                 <input
                   type="number"
-                  value={seedsData.seedsAvailable}
-                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedsAvailable: parseInt(e.target.value) || 0 }))}
+                  value={seedsData.seedsCount}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedsCount: parseInt(e.target.value) || 0 }))}
                   style={{
                     width: '100%',
                     fontSize: '1.25rem',
@@ -793,7 +909,7 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
                     backgroundColor: 'white'
                   }}
                 />
-                <div style={{ fontSize: '0.75rem', color: '#0c4a6e', fontWeight: '500', marginTop: '0.25rem' }}>Seeds Available</div>
+                <div style={{ fontSize: '0.75rem', color: '#0c4a6e', fontWeight: '500', marginTop: '0.25rem' }}>Seeds Count</div>
               </div>
 
               <div
@@ -807,8 +923,8 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               >
                 <input
                   type="number"
-                  value={seedsData.seedsSold}
-                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedsSold: parseInt(e.target.value) || 0 }))}
+                  value={seedsData.bonus}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, bonus: parseInt(e.target.value) || 0 }))}
                   style={{
                     width: '100%',
                     fontSize: '1.25rem',
@@ -821,7 +937,7 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
                     backgroundColor: 'white'
                   }}
                 />
-                <div style={{ fontSize: '0.75rem', color: '#14532d', fontWeight: '500', marginTop: '0.25rem' }}>Seeds Sold</div>
+                <div style={{ fontSize: '0.75rem', color: '#14532d', fontWeight: '500', marginTop: '0.25rem' }}>Bonus</div>
               </div>
 
               <div
@@ -835,8 +951,9 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
               >
                 <input
                   type="number"
-                  value={seedsData.activeBatches}
-                  onChange={(e) => setSeedsData(prev => ({ ...prev, activeBatches: parseInt(e.target.value) || 0 }))}
+                  step="0.01"
+                  value={seedsData.price}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
                   style={{
                     width: '100%',
                     fontSize: '1.25rem',
@@ -849,7 +966,36 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
                     backgroundColor: 'white'
                   }}
                 />
-                <div style={{ fontSize: '0.75rem', color: '#713f12', fontWeight: '500', marginTop: '0.25rem' }}>Active Batches</div>
+                <div style={{ fontSize: '0.75rem', color: '#713f12', fontWeight: '500', marginTop: '0.25rem' }}>Price</div>
+              </div>
+
+              <div
+                style={{
+                  padding: '0.75rem',
+                  backgroundColor: '#fce7f3',
+                  border: '1px solid #fbcfe8',
+                  borderRadius: '0.5rem',
+                  textAlign: 'center'
+                }}
+              >
+                <input
+                  type="text"
+                  value={seedsData.seedType}
+                  onChange={(e) => setSeedsData(prev => ({ ...prev, seedType: e.target.value }))}
+                  placeholder="Enter seed type"
+                  style={{
+                    width: '100%',
+                    fontSize: '1.25rem',
+                    fontWeight: '700',
+                    color: '#9f1239',
+                    textAlign: 'center',
+                    border: '1px solid #fbcfe8',
+                    borderRadius: '0.375rem',
+                    padding: '0.25rem',
+                    backgroundColor: 'white'
+                  }}
+                />
+                <div style={{ fontSize: '0.75rem', color: '#881337', fontWeight: '500', marginTop: '0.25rem' }}>Seed Type</div>
               </div>
             </div>
 
@@ -884,6 +1030,161 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
                 </>
               )}
             </button>
+          </div>
+
+          {/* Hatchery Images Section */}
+          <div className="hatchery-images-section" style={{ marginBottom: '2rem' }}>
+            <div
+              className="section-header"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                marginBottom: '1.25rem',
+                paddingBottom: '0.75rem',
+                borderBottom: '2px solid #5B7C99'
+              }}
+            >
+              <FiImage className="section-icon" style={{ color: '#5B7C99', fontSize: '1.25rem' }} />
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#111827' }}>
+                Hatchery Images {hatchery?.images?.length ? `(${hatchery.images.length}/4)` : '(0/4)'}
+              </h3>
+            </div>
+
+            {loadingHatchery ? (
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <FiRefreshCw style={{ fontSize: '2rem', color: '#5B7C99', animation: 'spin 1s linear infinite' }} />
+                <p style={{ marginTop: '0.5rem', color: '#6b7280' }}>Loading hatchery images...</p>
+              </div>
+            ) : hatchery?.images && hatchery.images.length > 0 ? (
+              <>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '1rem',
+                  marginBottom: '1.5rem'
+                }}>
+                  {[0, 1, 2, 3].map((index) => {
+                    const image = hatchery.images[index];
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          position: 'relative',
+                          aspectRatio: '1',
+                          borderRadius: '0.5rem',
+                          overflow: 'hidden',
+                          backgroundColor: '#f3f4f6',
+                          border: '1px solid #e5e7eb',
+                          cursor: image?.url ? 'pointer' : 'default'
+                        }}
+                        onClick={() => image?.url && handleImageClick(image.url)}
+                      >
+                        {image?.url ? (
+                          <>
+                            <img
+                              src={image.url}
+                              alt={`Hatchery image ${index + 1}`}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                              }}
+                            />
+                            {image.location && (
+                              <div style={{
+                                position: 'absolute',
+                                top: '0.5rem',
+                                right: '0.5rem',
+                                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                                borderRadius: '0.5rem',
+                                padding: '0.25rem 0.5rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.25rem'
+                              }}>
+                                <FiMapPin style={{ fontSize: '0.75rem', color: 'white' }} />
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div style={{
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#9ca3af',
+                            border: '2px dashed #d1d5db'
+                          }}>
+                            <FiImage style={{ fontSize: '2rem', marginBottom: '0.5rem' }} />
+                            <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>Slot {index + 1}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Delete Hatchery Button - Always enabled if hatchery exists */}
+                <button
+                  onClick={handleDeleteHatchery}
+                  disabled={deletingHatchery}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: deletingHatchery ? '#9ca3af' : '#ef4444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.5rem',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    cursor: deletingHatchery ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!deletingHatchery) {
+                      e.target.style.backgroundColor = '#dc2626';
+                      e.target.style.transform = 'translateY(-1px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!deletingHatchery) {
+                      e.target.style.backgroundColor = '#ef4444';
+                      e.target.style.transform = 'translateY(0)';
+                    }
+                  }}
+                >
+                  {deletingHatchery ? (
+                    <>
+                      <FiRefreshCw style={{ animation: 'spin 1s linear infinite' }} />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <FiTrash2 />
+                      Delete Hatchery
+                    </>
+                  )}
+                </button>
+              </>
+            ) : (
+              <div style={{
+                textAlign: 'center',
+                padding: '2rem',
+                backgroundColor: '#f9fafb',
+                borderRadius: '0.5rem',
+                border: '1px solid #e5e7eb'
+              }}>
+                <FiImage style={{ fontSize: '3rem', color: '#9ca3af', marginBottom: '0.5rem' }} />
+                <p style={{ margin: 0, color: '#6b7280', fontWeight: '500' }}>No hatchery images uploaded yet</p>
+              </div>
+            )}
           </div>
 
           {/* Password Reset Section */}
@@ -1051,6 +1352,17 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
           </div>
         </div>
       </div>
+
+      {/* Fullscreen Image Modal for hatchery images */}
+      {showImageViewer && selectedImageUrl && (
+        <FullscreenImageModal
+          imageUrl={selectedImageUrl}
+          onClose={() => {
+            setShowImageViewer(false);
+            setSelectedImageUrl(null);
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -1158,8 +1470,15 @@ const AdminDashboardContent = () => {
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  // Stories state
+  const [stories, setStories] = useState([]);
+  const [showStoryViewer, setShowStoryViewer] = useState(false);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+  const [loadingStories, setLoadingStories] = useState(false);
+
   useEffect(() => {
     fetchAllUserData();
+    loadAdminStories();
   }, []);
 
   const fetchAllUserData = async () => {
@@ -1197,6 +1516,46 @@ const AdminDashboardContent = () => {
       console.error('Error fetching user data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Load admin stories
+  const loadAdminStories = async () => {
+    try {
+      setLoadingStories(true);
+      const response = await getAdminStories();
+      if (response.success) {
+        setStories(response.stories || []);
+      }
+    } catch (error) {
+      console.error('Error loading admin stories:', error);
+    } finally {
+      setLoadingStories(false);
+    }
+  };
+
+  // Handle story press
+  const handleStoryPress = (index) => {
+    setSelectedStoryIndex(index);
+    setShowStoryViewer(true);
+  };
+
+  // Handle delete story
+  const handleDeleteStory = async (storyId) => {
+    if (!window.confirm('Are you sure you want to delete this story? It will be removed from all users.')) {
+      return;
+    }
+
+    try {
+      const response = await deleteAdminStory(storyId);
+      if (response.success) {
+        // Reload stories
+        loadAdminStories();
+        alert('Story deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting story:', error);
+      alert('Failed to delete story');
     }
   };
 
@@ -1359,6 +1718,26 @@ const handlePasswordReset = async (userId, newPassword) => {
           Welcome back! Here's what's happening with your platform.
         </p>
       </div>
+
+      {/* My Status - Admin Stories */}
+      {stories.length > 0 && (
+        <div className="admin-card" style={{ marginBottom: '2rem' }}>
+          <div className="admin-card-header">
+            <div className="admin-card-title">
+              <h3>My Status</h3>
+              <p>Your active stories visible to all users</p>
+            </div>
+          </div>
+          <div className="admin-card-content">
+            <Stories
+              stories={stories}
+              onStoryPress={handleStoryPress}
+              showDelete={true}
+              onDelete={handleDeleteStory}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="admin-stats-grid">
@@ -1634,7 +2013,7 @@ const handlePasswordReset = async (userId, newPassword) => {
                 <div 
                   className="image-modal-content"
                   style={{
-                    display: 'grid',
+                    // display: 'grid',
                     display: 'flex',
                     flexDirection: 'column',
                     maxHeight: '95vh',
@@ -1919,6 +2298,15 @@ const handlePasswordReset = async (userId, newPassword) => {
           onClose={() => setShowFullscreenImage(false)}
         />
       )}
+
+      {/* Story Viewer Modal */}
+      <StoryViewer
+        visible={showStoryViewer}
+        stories={stories}
+        initialIndex={selectedStoryIndex}
+        onClose={() => setShowStoryViewer(false)}
+        onStoryViewed={() => {}} // Admin doesn't need to mark as viewed
+      />
     </div>
   );
 };

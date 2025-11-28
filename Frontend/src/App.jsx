@@ -20,6 +20,8 @@ import AdminRejected from './Components/AdminRejected';
 import AdminPending from './Components/AdminPending';
 import AdminNotifications from './Components/AdminNotifications';
 import AdminHelp from './Components/AdminHelp';
+import AdminPurchaseHistory from './Components/AdminPurchaseHistory';
+import UserPurchaseHistory from './Components/UserPurchaseHistory';
 
 
 import './App.css';
@@ -132,8 +134,11 @@ function AppContent() {
 
           <Route path="declined" element={<AdminRejected />} />
           <Route path="notifications" element={<AdminNotifications />} />
+          <Route path="purchase-history" element={<AdminPurchaseHistory />} />
         </Route>
 
+        {/* User Purchase History Route */}
+        <Route path="/user-purchase-history" element={<UserPurchaseHistory />} />
       
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
