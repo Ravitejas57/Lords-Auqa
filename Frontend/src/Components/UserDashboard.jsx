@@ -4,7 +4,7 @@ import {
   FiBell, FiUpload, FiMenu, FiX, FiHome,  FiSettings, FiHelpCircle,
   FiCheckCircle, FiClock,  FiEye, FiCamera, FiUser, FiLogOut,
   FiTrendingUp, FiPackage, FiActivity,  FiChevronDown,
-  FiImage, FiTrash2, FiDownload,  FiAlertCircle, FiXCircle,
+  FiTrash2, FiDownload,  FiAlertCircle, FiXCircle,
   FiGlobe, FiLock, FiMail, FiPhone,  FiRefreshCw,  FiSave,
  FiEdit3, FiMapPin, FiSmartphone, FiMaximize, FiMinimize
 } from "react-icons/fi";
@@ -1457,10 +1457,6 @@ function UserDashboardInner() {
   };
 
   // Open file picker as fallback
-  const handleChooseFromGallery = () => {
-    handleCloseCamera();
-    setShowImageUploadModal(true);
-  };
 
   // Handle file selection (fallback method)
   const handleFileSelect = (e) => {
@@ -2945,9 +2941,6 @@ function UserDashboardInner() {
                     <button className="btn-secondary" onClick={handleCloseCamera}>
                       Close
                     </button>
-                    <button className="btn-primary" onClick={handleChooseFromGallery}>
-                      <FiImage /> Choose from Gallery
-                    </button>
                   </div>
                 </div>
               ) : (
@@ -2964,9 +2957,6 @@ function UserDashboardInner() {
                   </div>
 
                   <div className="camera-controls">
-                    <button className="btn-secondary" onClick={handleChooseFromGallery}>
-                      <FiImage /> Gallery
-                    </button>
                     <button className="btn-capture" onClick={handleCapturePhoto}>
                       <FiCamera size={32} />
                     </button>
