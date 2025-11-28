@@ -235,11 +235,11 @@ const AdminLayout = () => {
 
             {profileDropdownOpen && (
               <div className="profile-dropdown">
-                <NavLink to="/admin/profile" className="dropdown-item">
-                  <FiUser />
-                  <span>Profile</span>
-                </NavLink>
-                <NavLink to="/admin/settings" className="dropdown-item">
+                <NavLink 
+                  to="/admin/settings" 
+                  className="dropdown-item"
+                  onClick={() => setProfileDropdownOpen(false)}
+                >
                   <FiSettings />
                   <span>Settings</span>
                 </NavLink>
@@ -314,16 +314,6 @@ const AdminLayout = () => {
             <FiMessageSquare />
             {!sidebarCollapsed && <span>Notifications</span>}
           </NavLink>
-
-          <NavLink
-            to="/admin/add-user"
-            className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
-            onClick={() => setSidebarOpen(false)}
-          >
-            {!sidebarCollapsed && <span>Add Seller</span>}
-          </NavLink>
-
-
 
           <NavLink
             to="/admin/settings"
