@@ -2499,14 +2499,48 @@
   }
 }
 
-/* Responsive Design */
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablet Styles */
+@media (max-width: 1024px) {
+  .admin-main-content {
+    padding: 1.5rem;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .admin-page-title {
+    font-size: 1.75rem;
+  }
+
+  .admin-page-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile Styles */
 @media (max-width: 768px) {
   .admin-main-content {
-    padding: var(--admin-spacing-md);
+    padding: 1rem;
   }
   
   .admin-stats-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
   
   .admin-form-grid {
@@ -2537,17 +2571,118 @@
   .admin-card-content {
     padding: var(--admin-spacing-md);
   }
-}
 
-@media (max-width: 480px) {
+  .admin-content-header {
+    margin-bottom: 1.5rem;
+  }
+
   .admin-page-title {
     font-size: 1.5rem;
+  }
+
+  .admin-page-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-stat-card {
+    padding: 1.25rem;
+  }
+
+  .admin-stat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+
+  .admin-stat-content h3 {
+    font-size: 1.75rem;
+  }
+
+  .admin-stat-content p {
+    font-size: 0.875rem;
+  }
+
+  /* Modal responsive */
+  .modal-overlay {
+    padding: 1rem;
+  }
+
+  .modal-container {
+    max-width: 100%;
+    max-height: 95vh;
+    margin: 0;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-content {
+    padding: 1rem;
+    max-height: calc(95vh - 120px);
+    overflow-y: auto;
+  }
+
+  /* Profile grid responsive */
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seeds-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+  .admin-main-content {
+    padding: 0.75rem;
+  }
+
+  .admin-page-title {
+    font-size: 1.25rem;
   }
   
   .admin-header-left {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--admin-spacing-sm);
+  }
+
+  .admin-stat-card {
+    padding: 1rem;
+  }
+
+  .admin-stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+
+  .admin-stat-content h3 {
+    font-size: 1.5rem;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .modal-content {
+    padding: 0.75rem;
+  }
+
+  .password-form {
+    gap: 0.75rem;
+  }
+
+  .btn-reset,
+  .btn-primary {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
   }
 }
 /* ===== ADMIN DASHBOARD CONTENT STYLES ===== */

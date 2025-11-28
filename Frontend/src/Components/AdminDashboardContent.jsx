@@ -2013,7 +2013,7 @@ const handlePasswordReset = async (userId, newPassword) => {
                 <div 
                   className="image-modal-content"
                   style={{
-                    display: 'grid',
+                    // display: 'grid',
                     display: 'flex',
                     flexDirection: 'column',
                     maxHeight: '95vh',
