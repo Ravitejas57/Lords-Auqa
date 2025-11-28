@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import { authStorage } from '@/src/services/storage/asyncStorage';
 import { userLogin, userSignup } from '@/src/services/api/authApi';
 import type { User, LoginRequest, SignupRequest } from '@/src/types/auth';
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   const isAuthenticated = !!user;
 
@@ -117,8 +119,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await authStorage.clearAuthData();
       setUser(null);
+      // Navigate to login screen after successful logout
+      router.replace('/(auth)/login');
     } catch (error: any) {
       Alert.alert('Error', error?.message || 'Failed to logout. Please try again.');
+      throw error;
     }
   };
 

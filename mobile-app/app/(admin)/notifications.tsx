@@ -75,16 +75,16 @@ export default function NotificationsScreen({ adminData, approvedUsers }: Notifi
     try {
       // Close modal first
       setShowMediaPicker(false);
-      
+
       // Check and request camera permission first
       const { status: existingCameraStatus } = await ImagePicker.getCameraPermissionsAsync();
       let finalCameraStatus = existingCameraStatus;
-      
+
       if (existingCameraStatus !== 'granted') {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         finalCameraStatus = status;
       }
-      
+
       // Handle camera permission denial
       if (finalCameraStatus !== 'granted') {
         Alert.alert(
@@ -92,8 +92,8 @@ export default function NotificationsScreen({ adminData, approvedUsers }: Notifi
           'Please enable camera access in your device settings to take photos or record videos.',
           [
             { text: 'Cancel', style: 'cancel' },
-            { 
-              text: 'Open Settings', 
+            {
+              text: 'Open Settings',
               onPress: () => {
                 Alert.alert(
                   'Settings',

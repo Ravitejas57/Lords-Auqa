@@ -176,35 +176,3 @@ export const adminLogin = async (loginData: { username: string; password: string
   }
 };
 
-// Admin Signup
-export const adminSignup = async (signupData: {
-  username: string;
-  phoneNumber: string;
-  password: string;
-}): Promise<any> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.ADMIN_SIGNUP}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(signupData),
-    });
-
-    return await handleResponse(response);
-  } catch (error: any) {
-    // Provide helpful error messages for network issues
-    if (error.message === 'Network request failed' || error.message?.includes('fetch')) {
-      const networkError = 'Cannot connect to server. Please check:\n' +
-        '1. Backend server is running (npm start in Backend folder)\n' +
-        '2. Your phone and computer are on the same WiFi network\n' +
-        '3. API_BASE_URL in api.ts has your computer\'s correct IP address\n' +
-        `Current API URL: ${API_BASE_URL}`;
-      Alert.alert('Connection Error', networkError);
-      throw new Error(networkError);
-    }
-
-    Alert.alert('Error', error?.message || 'Failed to sign up. Please try again.');
-    throw error;
-  }
-};

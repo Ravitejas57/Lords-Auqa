@@ -32,10 +32,9 @@ export default function SettingsScreen() {
           onPress: async () => {
             try {
               await logout();
-              router.replace('/(auth)/login');
             } catch (error) {
               console.error('Logout error:', error);
-              Alert.alert('Error', 'Failed to logout. Please try again.');
+              // Error alert is already shown in AuthContext
             }
           },
         },

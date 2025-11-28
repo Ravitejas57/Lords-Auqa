@@ -19,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@/src/store/context/AuthContext';
-import { getAdmins, adminLogin, adminSignup } from '@/src/services/api/authApi';
+import { getAdmins, adminLogin } from '@/src/services/api/authApi';
 import { Colors } from '@/src/constants/colors';
 import type { Admin } from '@/src/types/auth';
 
@@ -143,59 +143,6 @@ export default function LoginScreen() {
   };
 
   const handleSignup = async () => {
-    if (isAdminMode) {
-      // Admin signup validation
-      if (!username.trim()) {
-        Alert.alert('Error', 'Please enter a username');
-        return;
-      }
-      if (!phoneNumber || phoneNumber.length !== 10) {
-        Alert.alert('Error', 'Please enter a valid 10-digit mobile number');
-        return;
-      }
-      if (!password || password.length < 6) {
-        Alert.alert('Error', 'Password must be at least 6 characters long');
-        return;
-      }
-      if (password !== confirmPassword) {
-        Alert.alert('Error', 'Passwords do not match');
-        return;
-      }
-
-      setIsLoadingSignup(true);
-
-      try {
-        // Clean phone number to get last 10 digits
-        const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
-        const last10Digits = cleanPhoneNumber.slice(-10);
-
-        const response = await adminSignup({
-          username: username.trim(),
-          phoneNumber: last10Digits,
-          password,
-        });
-
-        Alert.alert(
-          'Success',
-          response.message || 'Admin registered successfully!',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                resetForm();
-                setIsSignUp(false);
-              },
-            },
-          ]
-        );
-      } catch (error: any) {
-        Alert.alert('Signup Failed', error?.message || 'Failed to create admin account. Please try again.');
-      } finally {
-        setIsLoadingSignup(false);
-      }
-      return;
-    }
-
     // User Validation
     if (!name.trim()) {
       Alert.alert('Error', 'Please enter your full name');
@@ -277,7 +224,10 @@ export default function LoginScreen() {
   const toggleAdminMode = () => {
     resetForm();
     setIsAdminMode(!isAdminMode);
-    setIsSignUp(false);
+    // If switching to admin mode, disable signup
+    if (!isAdminMode) {
+      setIsSignUp(false);
+    }
   };
 
   return (
@@ -302,9 +252,7 @@ export default function LoginScreen() {
             <Text style={styles.title}>Lords Aqua Hatcheries</Text>
             <Text style={styles.subtitle}>
               {isAdminMode
-                ? isSignUp
-                  ? 'Admin Registration'
-                  : 'Administrator Login'
+                ? 'Administrator Login'
                 : isSignUp
                 ? 'Create your account'
                 : 'Welcome back'}
@@ -333,44 +281,22 @@ export default function LoginScreen() {
             )}
 
             {isAdminMode ? (
-              <>
-                <View style={styles.inputGroup}>
-                  <Ionicons
-                    name="person-outline"
-                    size={20}
-                    color={Colors.textLight}
-                    style={styles.inputIcon}
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Username *"
-                    placeholderTextColor={Colors.textLight}
-                    value={username}
-                    onChangeText={setUsername}
-                    autoCapitalize="none"
-                  />
-                </View>
-                {isSignUp && (
-                  <View style={styles.inputGroup}>
-                    <Ionicons
-                      name="call-outline"
-                      size={20}
-                      color={Colors.textLight}
-                      style={styles.inputIcon}
-                    />
-                    <Text style={styles.countryCode}>+91</Text>
-                    <TextInput
-                      style={[styles.input, styles.phoneInput]}
-                      placeholder="Mobile Number *"
-                      placeholderTextColor={Colors.textLight}
-                      value={phoneNumber}
-                      onChangeText={setPhoneNumber}
-                      keyboardType="phone-pad"
-                      maxLength={10}
-                    />
-                  </View>
-                )}
-              </>
+              <View style={styles.inputGroup}>
+                <Ionicons
+                  name="person-outline"
+                  size={20}
+                  color={Colors.textLight}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Username *"
+                  placeholderTextColor={Colors.textLight}
+                  value={username}
+                  onChangeText={setUsername}
+                  autoCapitalize="none"
+                />
+              </View>
             ) : (
               <View style={styles.inputGroup}>
                 <Ionicons
@@ -476,7 +402,7 @@ export default function LoginScreen() {
               </Pressable>
             </View>
 
-            {isSignUp && isAdminMode && (
+            {isSignUp && !isAdminMode && (
               <View style={styles.inputGroup}>
                 <Ionicons
                   name="lock-closed-outline"
@@ -520,9 +446,7 @@ export default function LoginScreen() {
               ) : (
                 <Text style={styles.buttonText}>
                   {isAdminMode
-                    ? isSignUp
-                      ? 'Create Admin Account'
-                      : 'Admin Login'
+                    ? 'Admin Login'
                     : isSignUp
                     ? 'Create Account'
                     : 'Login to Dashboard'}
@@ -549,23 +473,9 @@ export default function LoginScreen() {
               <Text style={styles.adminToggleText}>Administrator?</Text>
               <Pressable onPress={toggleAdminMode}>
                 <Text style={styles.adminToggleLink}>
-                  {isAdminMode ? 'Back to User Login' : 'Login'}
+                  {isAdminMode ? 'Back to User Login' : 'Login here'}
                 </Text>
               </Pressable>
-              {!isAdminMode && (
-                <>
-                  <Text style={styles.adminToggleSeparator}>•</Text>
-                  <Pressable
-                    onPress={() => {
-                      setIsAdminMode(true);
-                      setIsSignUp(true);
-                      resetForm();
-                    }}
-                  >
-                    <Text style={styles.adminToggleLink}>Sign up</Text>
-                  </Pressable>
-                </>
-              )}
             </View>
           </View>
         </ScrollView>

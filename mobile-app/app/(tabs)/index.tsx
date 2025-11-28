@@ -167,10 +167,9 @@ export default function HomeScreen() {
           onPress: async () => {
             try {
               await logout();
-              router.replace('/(auth)/login');
             } catch (error) {
-              const errorMessage = error instanceof Error ? error.message : 'Failed to logout. Please try again.';
-              Alert.alert('Error', errorMessage);
+              console.error('Logout error:', error);
+              // Error alert is already shown in AuthContext
             }
           },
         },

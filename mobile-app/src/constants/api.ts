@@ -1,14 +1,13 @@
 // API Configuration
 // ✅ Updated with your computer's actual WiFi IP address: 192.168.0.108
 // Both your phone and computer MUST be on the same WiFi network
-export const API_BASE_URL = 'http://192.168.1.6:3000/api';
+export const API_BASE_URL = 'http://192.168.0.109:3000/api';
 
 export const API_ENDPOINTS = {
   AUTH: {
     USER_LOGIN: '/Auth/User-login',
     USER_SIGNUP: '/Auth/User-signup',
     ADMIN_LOGIN: '/Auth/Admin-login',
-    ADMIN_SIGNUP: '/adminActions/admin-signup',
     GET_ADMINS: '/Auth/admins',
   },
   USER: {

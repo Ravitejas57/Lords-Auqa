@@ -246,33 +246,7 @@ export default function HatcheryScreen() {
         return;
       }
 
-      // Show upload options
-      Alert.alert(
-        'Upload Image',
-        'Choose image source',
-        [
-          {
-            text: 'Take Photo',
-            onPress: () => captureImage(index),
-          },
-          {
-            text: 'Choose from Gallery',
-            onPress: () => pickImage(index),
-          },
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-        ]
-      );
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Camera permission is required to take photos.';
-      Alert.alert('Permission Error', errorMessage);
-    }
-  };
-
-  const captureImage = async (index: number) => {
-    try {
+      // Directly launch camera
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: 'images',
         quality: 0.8,
@@ -282,24 +256,8 @@ export default function HatcheryScreen() {
         await uploadImage(result.assets[0].uri, index);
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to capture image';
-      Alert.alert('Error', errorMessage);
-    }
-  };
-
-  const pickImage = async (index: number) => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: 'images',
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        await uploadImage(result.assets[0].uri, index);
-      }
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to pick image';
-      Alert.alert('Error', errorMessage);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to capture image. Please try again.';
+      Alert.alert('Camera Error', errorMessage);
     }
   };
 
