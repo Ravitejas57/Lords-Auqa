@@ -203,8 +203,8 @@ const AdminAddUser = () => {
         alert(`❌ ${data.message || "Failed to create user"}`);
       }
     } catch (err) {
-      console.error("Error creating user:", err);
-      alert("Error creating user. Please check console for details.");
+      console.error("Error creating seller:", err);
+      alert("Error creating seller. Please check console for details.");
     }
     setLoading(false);
   };
@@ -213,8 +213,8 @@ const AdminAddUser = () => {
     <div className="admin-add-user-page">
       <div className="add-user-header">
         <div className="header-left">
-          <h1>Add New User</h1>
-          <p>Enter user details and create account</p>
+          <h1>Add New Seller</h1>
+          <p>Enter seller details and create account</p>
         </div>
       </div>
 
@@ -223,10 +223,10 @@ const AdminAddUser = () => {
           <FiHome style={{ fontSize: "2rem", color: "#10b981" }} />
           <div style={{ flex: 1 }}>
             <h3 style={{ margin: "0 0 0.5rem 0", color: "#10b981" }}>
-              User Created Successfully!
+              Seller Created Successfully!
             </h3>
             <p style={{ margin: 0, fontSize: "0.9rem" }}>
-              The user can now log in using their phone number and password.
+              The seller can now log in using their phone number and password.
             </p>
           </div>
           <button
@@ -562,10 +562,10 @@ const AdminAddUser = () => {
                 disabled={loading}
               >
                 {loading ? (
-                  "Creating User..."
+                  "Creating Seller..."
                 ) : (
                   <>
-                    <FiSave /> Add User
+                    <FiSave /> Add Seller
                   </>
                 )}
               </button>

@@ -6,8 +6,9 @@ import {
   FiTrendingUp, FiPackage, FiActivity,  FiChevronDown,
   FiImage, FiTrash2, FiDownload,  FiAlertCircle, FiXCircle,
   FiGlobe, FiLock, FiMail, FiPhone,  FiRefreshCw,  FiSave,
- FiEdit3, FiMapPin, FiSmartphone, FiMaximize, FiMinimize
+ FiEdit3, FiMapPin, FiSmartphone, FiMaximize, FiMinimize, FiFileText
 } from "react-icons/fi";
+import { FaFish } from "react-icons/fa";
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -22,6 +23,7 @@ import { Navigate } from 'react-router-dom';
 import UserNotifications from "./UserNotifications";
 import UserHelp from "./UserHelp";
 import UserSettings from "./UserSettings";
+import UserPurchaseHistory from "./UserPurchaseHistory";
 import { getUserNotifications, markAllAsRead, getActiveStories, markAsRead } from "../services/notificationService";
 import Stories from './Stories';
 import StoryViewer from './StoryViewer';
@@ -2198,7 +2200,7 @@ function UserDashboardInner() {
         </div>
       )}
 
-      <div className="stats-grid stats-grid-three">
+      <div className="stats-grid stats-grid-two">
         <div className="stat-card seeds-available">
           <div className="stat-icon">
             <FiPackage />
@@ -2229,9 +2231,9 @@ function UserDashboardInner() {
           </div>
         </div>
 
-        <div className="stat-card seed-type" style={{ gridColumn: 'span 3' }}>
+        <div className="stat-card seed-type">
           <div className="stat-icon">
-            <FiPackage />
+            <FaFish />
           </div>
           <div className="stat-content">
             <div className="stat-value">{stats.seedType}</div>
@@ -2763,6 +2765,13 @@ function UserDashboardInner() {
               {!sidebarCollapsed && <span>Settings</span>}
             </button>
             <button
+              className={`sidebar-item ${activeSection === "purchase-history" ? "active" : ""}`}
+              onClick={() => handleNavigation("purchase-history")}
+            >
+              <FiFileText />
+              {!sidebarCollapsed && <span>Purchase History</span>}
+            </button>
+            <button
               className={`sidebar-item ${activeSection === "help" ? "active" : ""}`}
               onClick={() => handleNavigation("help")}
               style={{ position: 'relative' }}
@@ -2797,6 +2806,7 @@ function UserDashboardInner() {
           {activeSection === "overview" && renderOverview()}
           {activeSection === "notifications" && <UserNotifications mongoIdProp={userProfile.mongoId} />}
           {activeSection === "settings" && <UserSettings onProfileUpdate={fetchUserProfileData} />}
+          {activeSection === "purchase-history" && <UserPurchaseHistory />}
           {activeSection === "help" && <UserHelp />}
         </main>
       </div>

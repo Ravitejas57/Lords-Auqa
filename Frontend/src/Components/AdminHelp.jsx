@@ -45,7 +45,7 @@ const AdminHelp = () => {
     {
       id: 5,
       question: "How do I add a new user manually?",
-      answer: "Go to 'Add User' section, fill in the user details including name, phone number, password, and optional seed count, then submit."
+      answer: "Go to 'Add Seller' section, fill in the seller details including name, phone number, password, and optional seed count, then submit."
     }
   ];
 

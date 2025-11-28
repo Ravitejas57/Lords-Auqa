@@ -365,3 +365,26 @@ export const getHelpMessageStats = async () => {
     throw error;
   }
 };
+
+// ==================== TRANSACTION HISTORY APIs ====================
+
+// Get user transaction history
+export const getUserTransactionHistory = async (userId) => {
+  try {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/hatcheries/transactions/user/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching user transaction history:', error);
+    throw error;
+  }
+};

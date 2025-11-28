@@ -1002,6 +1002,12 @@ body {
   margin-bottom: 3rem;
 }
 
+/* Two-column grid for 2x2 layout */
+.stats-grid-two {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
 /* Three-column grid for overview with only 3 cards */
 .stats-grid-three {
   grid-template-columns: repeat(3, 1fr);
@@ -1066,6 +1072,10 @@ body {
 
 .stat-card.active-batches .stat-icon {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-card.seed-type .stat-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 .stat-content {
@@ -3159,6 +3169,10 @@ textarea:focus {
 
   .stats-grid,
   .stats-grid-three {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid-two {
     grid-template-columns: 1fr;
   }
 

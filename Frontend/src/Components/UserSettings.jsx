@@ -27,6 +27,16 @@ const UserSettings = ({ onProfileUpdate }) => {
     fetchUserProfile();
   }, []);
 
+  // Refresh profile data when window comes into focus (in case admin updated seeds info)
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchUserProfile();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
+
   const fetchUserProfile = async () => {
     try {
       // Get phone number from localStorage (same as UserDashboard)
@@ -61,10 +71,6 @@ const UserSettings = ({ onProfileUpdate }) => {
           district: data.user.district || "",
           pincode: data.user.pincode || "",
           address: data.user.address || "",
-          seedsCount: data.user.seedsCount || 0,
-          bonus: data.user.bonus || 0,
-          price: data.user.price || 0,
-          seedType: data.user.seedType || 'N/A',
         });
       } else {
         setError("Failed to fetch user data");
@@ -128,7 +134,9 @@ const UserSettings = ({ onProfileUpdate }) => {
     setSaving(true);
     try {
       const formData = new FormData();
-      Object.keys(editData).forEach((key) => {
+      // Only include editable fields (exclude seeds information)
+      const editableFields = ['name', 'email', 'phoneNumber', 'country', 'state', 'district', 'pincode', 'address'];
+      editableFields.forEach((key) => {
         if (editData[key] !== undefined && editData[key] !== null) {
           formData.append(key, editData[key]);
         }
@@ -162,9 +170,11 @@ const UserSettings = ({ onProfileUpdate }) => {
         setImageFile(null);
         setImagePreview(null);
         setRemoveProfileImage(false);
+        
+        // Refresh local profile data
         fetchUserProfile();
 
-        // Notify parent to refresh profile data (for header update)
+        // Notify parent to refresh profile data (for header and stats cards update)
         if (onProfileUpdate) {
           onProfileUpdate();
         }
@@ -194,9 +204,6 @@ const UserSettings = ({ onProfileUpdate }) => {
         district: userData.district || "",
         pincode: userData.pincode || "",
         address: userData.address || "",
-        seedsAvailable: userData.seedsAvailable || 0,
-        seedsSold: userData.seedsSold || 0,
-        activeBatches: userData.activeBatches || 0,
       });
     }
   };
@@ -598,39 +605,65 @@ const UserSettings = ({ onProfileUpdate }) => {
                   </div>
                 </div>
 
-                {/* Seeds Information - Edit Mode */}
+                {/* Seeds Information - Edit Mode (Read-Only) */}
                 <div className="form-section">
                   <h4 className="form-section-title">
                     <FiPackage style={{ marginRight: '0.5rem' }} /> Seeds Information
                   </h4>
                   <div className="form-grid">
                     <div className="form-field">
-                      <label>Seeds Available</label>
+                      <label>Seeds Count</label>
                       <input
-                        type="number"
-                        min="0"
-                        value={editData.seedsAvailable}
-                        onChange={(e) => handleEditChange("seedsAvailable", parseInt(e.target.value) || 0)}
+                        type="text"
+                        value={userData?.seedsCount?.toLocaleString() || 0}
+                        disabled
+                        style={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#6b7280',
+                          cursor: 'not-allowed'
+                        }}
                       />
                     </div>
 
                     <div className="form-field">
-                      <label>Seeds Sold</label>
+                      <label>Bonus</label>
                       <input
-                        type="number"
-                        min="0"
-                        value={editData.seedsSold}
-                        onChange={(e) => handleEditChange("seedsSold", parseInt(e.target.value) || 0)}
+                        type="text"
+                        value={userData?.bonus?.toLocaleString() || 0}
+                        disabled
+                        style={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#6b7280',
+                          cursor: 'not-allowed'
+                        }}
                       />
                     </div>
 
                     <div className="form-field">
-                      <label>Active Batches</label>
+                      <label>Price</label>
                       <input
-                        type="number"
-                        min="0"
-                        value={editData.activeBatches}
-                        onChange={(e) => handleEditChange("activeBatches", parseInt(e.target.value) || 0)}
+                        type="text"
+                        value={`₹${userData?.price?.toLocaleString() || 0}`}
+                        disabled
+                        style={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#6b7280',
+                          cursor: 'not-allowed'
+                        }}
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label>Seed Type</label>
+                      <input
+                        type="text"
+                        value={userData?.seedType || 'N/A'}
+                        disabled
+                        style={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#6b7280',
+                          cursor: 'not-allowed'
+                        }}
                       />
                     </div>
                   </div>

@@ -4,12 +4,13 @@ import {
   FiSearch, FiEye, FiPhone, FiMapPin, FiUsers, FiActivity,
   FiX, FiZoomOut, FiZoomIn, FiRotateCw, FiMessageSquare,
   FiCheckCircle, FiXCircle, FiMaximize, FiMinimize,
-  FiUser, FiHome, FiMail, FiCopy, FiRefreshCw, FiKey, FiPackage
+  FiUser, FiHome, FiMail, FiCopy, FiRefreshCw, FiKey, FiPackage,
+  FiImage, FiTrash2
 } from 'react-icons/fi';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../CSS/AdminSellers.css';
-import { getApprovedUsers, updateUserSeeds, resetUserPassword } from "../services/adminApi";
+import { getApprovedUsers, updateUserSeeds, resetUserPassword, getUserHatcheries, approveHatchery, deleteAndResetHatchery } from "../services/adminApi";
 
 // ImageDetailsWithMap Component
 const ImageDetailsWithMap = ({ selectedSeller, selectedImage }) => {
@@ -355,6 +356,14 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
     seedType: user.seedType || 'Hardyline'
   });
   const [isSavingSeeds, setIsSavingSeeds] = useState(false);
+  
+  // Hatchery states
+  const [hatchery, setHatchery] = useState(null);
+  const [loadingHatchery, setLoadingHatchery] = useState(false);
+  const [approvingHatchery, setApprovingHatchery] = useState(false);
+  const [deletingHatchery, setDeletingHatchery] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+  const [showImageViewer, setShowImageViewer] = useState(false);
 
   const handleSeedsUpdate = async () => {
     setIsSavingSeeds(true);
@@ -365,6 +374,110 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
     } finally {
       setIsSavingSeeds(false);
     }
+  };
+
+  // Fetch hatchery data when modal opens
+  useEffect(() => {
+    if (user?.userId || user?._id) {
+      loadHatchery();
+    }
+  }, [user]);
+
+  const loadHatchery = async () => {
+    const userId = user?.userId || user?._id;
+    if (!userId) return;
+    
+    setLoadingHatchery(true);
+    try {
+      const response = await getUserHatcheries(userId, true);
+      if (response.success && response.hatcheries && response.hatcheries.length > 0) {
+        // Get the most recent hatchery (first one)
+        setHatchery(response.hatcheries[0]);
+      } else {
+        setHatchery(null);
+      }
+    } catch (error) {
+      console.error('Error loading hatchery:', error);
+      setHatchery(null);
+    } finally {
+      setLoadingHatchery(false);
+    }
+  };
+
+  // Check if all 4 images are uploaded
+  const allImagesApproved = hatchery?.images?.length === 4;
+
+  const handleApproveHatchery = async () => {
+    if (!hatchery || !user) return;
+
+    if (!window.confirm('Are you sure you want to approve this hatchery? This will complete the transaction and reset all image slots for the user.')) {
+      return;
+    }
+
+    setApprovingHatchery(true);
+    try {
+      // Get admin data from localStorage
+      const adminData = localStorage.getItem('adminData');
+      const admin = adminData ? JSON.parse(adminData) : null;
+
+      const response = await approveHatchery({
+        hatcheryId: hatchery._id,
+        userId: user.userId || user._id,
+        adminId: admin?.profile?._id || admin?._id || admin?.id,
+        adminName: admin?.name || 'Admin',
+      });
+
+      if (response.success) {
+        alert('Hatchery approved successfully! Image slots have been reset.');
+        loadHatchery(); // Reload to show reset state
+      } else {
+        alert(response.message || 'Failed to approve hatchery');
+      }
+    } catch (error) {
+      console.error('Error approving hatchery:', error);
+      alert(error.message || 'Failed to approve hatchery');
+    } finally {
+      setApprovingHatchery(false);
+    }
+  };
+
+  const handleDeleteHatchery = async () => {
+    if (!hatchery || !user) return;
+
+    if (!window.confirm('Are you sure you want to delete this hatchery? This will reset all image slots WITHOUT creating a purchase history entry. The slots will remain locked until you update the seeds count.')) {
+      return;
+    }
+
+    setDeletingHatchery(true);
+    try {
+      // Get admin data from localStorage
+      const adminData = localStorage.getItem('adminData');
+      const admin = adminData ? JSON.parse(adminData) : null;
+
+      const response = await deleteAndResetHatchery({
+        hatcheryId: hatchery._id,
+        userId: user.userId || user._id,
+        adminId: admin?.profile?._id || admin?._id || admin?.id,
+        adminName: admin?.name || 'Admin',
+      });
+
+      if (response.success) {
+        alert('Hatchery deleted successfully! Image slots have been reset and are now locked.');
+        loadHatchery(); // Reload to show reset state
+      } else {
+        alert(response.message || 'Failed to delete hatchery');
+      }
+    } catch (error) {
+      console.error('Error deleting hatchery:', error);
+      alert(error.message || 'Failed to delete hatchery');
+    } finally {
+      setDeletingHatchery(false);
+    }
+  };
+
+  const handleImagePress = (imageUrl) => {
+    setSelectedImageUrl(imageUrl);
+    setShowImageViewer(true);
   };
 
   const generateRandomPassword = () => {
@@ -913,6 +1026,213 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
             </button>
           </div>
 
+          {/* Hatchery Images Section */}
+          <div className="hatchery-images-section" style={{ marginBottom: '2rem' }}>
+            <div
+              className="section-header"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                marginBottom: '1.25rem',
+                paddingBottom: '0.75rem',
+                borderBottom: '2px solid #5B7C99'
+              }}
+            >
+              <FiImage className="section-icon" style={{ color: '#5B7C99', fontSize: '1.25rem' }} />
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#111827' }}>
+                Hatchery Images {hatchery?.images?.length ? `(${hatchery.images.length}/4)` : '(0/4)'}
+              </h3>
+            </div>
+
+            {loadingHatchery ? (
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <FiRefreshCw style={{ fontSize: '2rem', color: '#5B7C99', animation: 'spin 1s linear infinite' }} />
+                <p style={{ marginTop: '0.5rem', color: '#6b7280' }}>Loading hatchery images...</p>
+              </div>
+            ) : hatchery?.images && hatchery.images.length > 0 ? (
+              <>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '1rem',
+                  marginBottom: '1.5rem'
+                }}>
+                  {[0, 1, 2, 3].map((index) => {
+                    const image = hatchery.images[index];
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          position: 'relative',
+                          aspectRatio: '1',
+                          borderRadius: '0.5rem',
+                          overflow: 'hidden',
+                          backgroundColor: '#f3f4f6',
+                          border: '1px solid #e5e7eb',
+                          cursor: image?.url ? 'pointer' : 'default'
+                        }}
+                        onClick={() => image?.url && handleImagePress(image.url)}
+                      >
+                        {image?.url ? (
+                          <>
+                            <img
+                              src={image.url}
+                              alt={`Hatchery image ${index + 1}`}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                              }}
+                            />
+                            {image.location && (
+                              <div style={{
+                                position: 'absolute',
+                                top: '0.5rem',
+                                right: '0.5rem',
+                                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                                borderRadius: '0.5rem',
+                                padding: '0.25rem 0.5rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.25rem'
+                              }}>
+                                <FiMapPin style={{ fontSize: '0.75rem', color: 'white' }} />
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div style={{
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#9ca3af',
+                            border: '2px dashed #d1d5db'
+                          }}>
+                            <FiImage style={{ fontSize: '2rem', marginBottom: '0.5rem' }} />
+                            <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>Slot {index + 1}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Approve Hatchery Button */}
+                {allImagesApproved && (
+                  <button
+                    onClick={handleApproveHatchery}
+                    disabled={approvingHatchery}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1.5rem',
+                      backgroundColor: approvingHatchery ? '#9ca3af' : '#10b981',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      cursor: approvingHatchery ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      marginBottom: '0.75rem',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!approvingHatchery) {
+                        e.target.style.backgroundColor = '#059669';
+                        e.target.style.transform = 'translateY(-1px)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!approvingHatchery) {
+                        e.target.style.backgroundColor = '#10b981';
+                        e.target.style.transform = 'translateY(0)';
+                      }
+                    }}
+                  >
+                    {approvingHatchery ? (
+                      <>
+                        <FiRefreshCw style={{ animation: 'spin 1s linear infinite' }} />
+                        Approving...
+                      </>
+                    ) : (
+                      <>
+                        <FiCheckCircle />
+                        Approve Hatchery
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {/* Delete Hatchery Button - Always enabled if hatchery exists */}
+                <button
+                  onClick={handleDeleteHatchery}
+                  disabled={deletingHatchery}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: deletingHatchery ? '#9ca3af' : '#ef4444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.5rem',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    cursor: deletingHatchery ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!deletingHatchery) {
+                      e.target.style.backgroundColor = '#dc2626';
+                      e.target.style.transform = 'translateY(-1px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!deletingHatchery) {
+                      e.target.style.backgroundColor = '#ef4444';
+                      e.target.style.transform = 'translateY(0)';
+                    }
+                  }}
+                >
+                  {deletingHatchery ? (
+                    <>
+                      <FiRefreshCw style={{ animation: 'spin 1s linear infinite' }} />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <FiTrash2 />
+                      Delete Hatchery
+                    </>
+                  )}
+                </button>
+              </>
+            ) : (
+              <div style={{
+                textAlign: 'center',
+                padding: '2rem',
+                backgroundColor: '#f9fafb',
+                borderRadius: '0.5rem',
+                border: '1px solid #e5e7eb'
+              }}>
+                <FiImage style={{ fontSize: '3rem', color: '#9ca3af', marginBottom: '0.5rem' }} />
+                <p style={{ margin: 0, color: '#6b7280', fontWeight: '500' }}>No hatchery images uploaded yet</p>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: '#9ca3af' }}>
+                  This seller hasn't uploaded any hatchery images
+                </p>
+              </div>
+            )}
+          </div>
+
           {/* Password Reset Section */}
           <div className="password-reset-section" style={{ marginBottom: '2rem' }}>
             <div
@@ -1078,6 +1398,91 @@ const ProfileViewModal = ({ user, onClose, onPasswordReset, onSeedsUpdate }) => 
           </div>
         </div>
       </div>
+
+      {/* Image Viewer Modal */}
+      {showImageViewer && selectedImageUrl && (
+        <div
+          onClick={() => {
+            setShowImageViewer(false);
+            setSelectedImageUrl(null);
+          }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.95)',
+            zIndex: 10001,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '2rem'
+          }}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowImageViewer(false);
+              setSelectedImageUrl(null);
+            }}
+            style={{
+              position: 'absolute',
+              top: '2rem',
+              right: '2rem',
+              width: '50px',
+              height: '50px',
+              borderRadius: '50%',
+              backgroundColor: '#ef4444',
+              color: 'white',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              zIndex: 10,
+              transition: 'all 0.2s',
+              boxShadow: '0 4px 8px rgba(239, 68, 68, 0.3)'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = '#dc2626';
+              e.currentTarget.style.transform = 'scale(1.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = '#ef4444';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <FiX />
+          </button>
+
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <img
+              src={selectedImageUrl}
+              alt="Hatchery image"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                width: 'auto',
+                height: 'auto',
+                borderRadius: '0.5rem',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+                objectFit: 'contain'
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
