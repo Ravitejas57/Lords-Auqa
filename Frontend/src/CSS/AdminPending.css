@@ -378,8 +378,56 @@
   background-color: #2563eb;
 }
 
-/* Responsive styles */
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablet Styles */
+@media (max-width: 1024px) {
+  .admin-main-content {
+    padding: 1.5rem;
+  }
+
+  .admin-table {
+    font-size: 0.875rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 0.75rem;
+  }
+}
+
+/* Mobile Styles */
 @media (max-width: 768px) {
+  .admin-main-content {
+    padding: 1rem;
+  }
+
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    min-width: 100%;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-table {
+    min-width: 800px;
+    font-size: 0.8125rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
   .actions-cell {
     flex-direction: column;
     gap: 0.25rem;
@@ -388,16 +436,33 @@
   .action-btn {
     padding: 0.375rem 0.75rem;
     font-size: 0.8125rem;
+    width: 100%;
+    justify-content: center;
   }
 
   .reject-modal,
   .history-modal {
     max-width: 100%;
     margin: 0.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1.125rem;
+  }
+
+  .modal-body {
+    padding: 1rem;
   }
 
   .modal-footer {
     flex-direction: column;
+    padding: 1rem;
   }
 
   .btn-cancel,
@@ -409,5 +474,46 @@
   .rejection-warning-badge {
     margin-left: 0;
     margin-top: 0.25rem;
+  }
+
+  .member-name {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .history-user-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+  .admin-main-content {
+    padding: 0.75rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 0.5rem 0.375rem;
+    font-size: 0.75rem;
+  }
+
+  .action-btn {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1rem;
+  }
+
+  .reason-textarea {
+    font-size: 0.875rem;
+  }
+
+  .reject-warning {
+    font-size: 0.875rem;
   }
 }

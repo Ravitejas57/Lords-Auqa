@@ -184,8 +184,20 @@
   color: #4a5568;
 }
 
-/* Responsive adjustments */
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablet Styles */
 @media (max-width: 1024px) {
+  .admin-main-content {
+    padding: 1.5rem;
+  }
+
+  .admin-header h1 {
+    font-size: 1.625rem;
+  }
+
   .admin-table {
     font-size: 0.875rem;
   }
@@ -199,19 +211,125 @@
     width: 2rem;
     height: 2rem;
   }
+
+  .filters-row {
+    gap: 0.75rem;
+  }
+
+  .search-box {
+    min-width: 250px;
+  }
 }
 
+/* Mobile Styles */
 @media (max-width: 768px) {
   .admin-main-content {
     padding: 1rem;
+  }
+
+  .admin-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .admin-header p {
+    font-size: 0.875rem;
   }
   
   .filters-row {
     flex-direction: column;
     align-items: stretch;
+    gap: 1rem;
   }
   
   .search-box {
     min-width: 100%;
+  }
+
+  .table-container {
+    border-radius: 0.375rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-table {
+    min-width: 800px;
+    font-size: 0.8125rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 0.75rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  .member-cell {
+    gap: 0.5rem;
+  }
+
+  .member-avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.75rem;
+  }
+
+  .member-name {
+    font-size: 0.875rem;
+  }
+
+  .actions-cell {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .action-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .status-badge {
+    font-size: 0.6875rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+  .admin-main-content {
+    padding: 0.75rem;
+  }
+
+  .admin-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 0.5rem 0.375rem;
+    font-size: 0.75rem;
+  }
+
+  .member-avatar {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .action-btn {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .phone-cell,
+  .region-cell {
+    font-size: 0.75rem;
+  }
+
+  .icon {
+    font-size: 0.875rem;
   }
 }
