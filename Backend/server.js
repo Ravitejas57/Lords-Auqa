@@ -53,7 +53,13 @@ io.on('connection', (socket) => {
 
 // ✅ Connect MongoDB
 mongoose.connect(process.env.DBurl, { dbName: 'hatchseed' })
-  .then(() => console.log('✅ Connected to MongoDB'))
+  .then(() => {
+    console.log('✅ Connected to MongoDB');
+
+    // Start cleanup service after DB connection
+    const cleanupService = require('./services/cleanupService');
+    cleanupService.startScheduledCleanup();
+  })
   .catch((err) => console.error('❌ DB Connection Error:', err));
 
 
