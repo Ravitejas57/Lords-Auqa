@@ -65,4 +65,25 @@ router.get('/:adminId', getAdminProfile);
 // Upload / update profile image
 router.put('/upload-profile-image/:adminId', upload.single('profileImage'), uploadProfileImage);
 
+// Manual cleanup trigger (admin only)
+router.post('/cleanup', async (req, res) => {
+  try {
+    const cleanupService = require('../services/cleanupService');
+    const result = await cleanupService.runImmediately();
+
+    res.json({
+      success: true,
+      message: 'Cleanup completed successfully',
+      result
+    });
+  } catch (error) {
+    console.error('Error running cleanup:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Cleanup failed',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

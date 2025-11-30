@@ -4,7 +4,12 @@
       "Bash(dir:*)",
       "Bash(findstr:*)",
       "Bash(ls:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(python add_icon_padding.py:*)",
+      "Bash(python3:*)",
+      "Bash(npm install:*)",
+      "Bash(node add_icon_padding.js:*)",
+      "Bash(node scripts/testCleanup.js:*)"
     ],
     "deny": [],
     "ask": []
